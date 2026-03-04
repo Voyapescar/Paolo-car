@@ -356,8 +356,8 @@ function Hero() {
   };
 
   const inputBase = (field) =>
-    `w-full bg-transparent border-b pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 ${
-      touched[field] && errors[field] ? 'border-red-500 focus:border-red-400' : 'border-stone-300 focus:border-gold-500'
+    `w-full bg-transparent border-b pb-3 pt-2 text-white placeholder-stone-500 focus:outline-none transition-colors duration-300 ${
+      touched[field] && errors[field] ? 'border-red-500 focus:border-red-400' : 'border-stone-700 focus:border-gold-500'
     }`;
 
   const today = new Date().toISOString().split('T')[0];
@@ -398,22 +398,21 @@ function Hero() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.9] mb-4"
+              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.9] mb-3"
             >
               Ofrecemos
             </motion.h1>
 
             <div
-              style={{ clipPath: 'inset(4px -50vw -12px 0)' }}
-              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold italic text-gold-500 leading-none mb-10 relative h-[1.3em] flex items-center w-full"
+              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic text-gold-500 leading-none mb-10 relative h-[1.4em]"
             >
               <AnimatePresence mode="wait">
                 <motion.span
                   key={cyclingIndex}
-                  initial={{ y: '110%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  exit={{ y: '-110%', opacity: 0 }}
-                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ opacity: 0, y: 8, filter: 'blur(6px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
+                  transition={{ duration: 0.5, ease: 'easeInOut' }}
                   className="absolute whitespace-nowrap"
                 >
                   {cyclingServices[cyclingIndex]}
@@ -460,7 +459,7 @@ function Hero() {
       </section>
 
       {/* ─── SECCIÓN FORMULARIO ──────────────────────────────────── */}
-      <section id="reserva" className="bg-obsidian-900 py-24">
+      <section id="reserva" className="bg-obsidian-900 py-24 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           {/* Cabecera */}
           <motion.div
@@ -472,10 +471,10 @@ function Hero() {
           >
             <p className="section-label mb-4">{config.bookingTitle || 'Agenda tu servicio'}</p>
             <div className="flex items-end gap-6">
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900">
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
                 Solicita tu <span className="italic text-gold-500">Reserva</span>
               </h2>
-              <div className="hidden md:block mb-2 flex-1 h-px bg-stone-200" />
+              <div className="hidden md:block mb-2 flex-1 h-px bg-stone-700" />
             </div>
             <p className="text-stone-400 mt-4 max-w-xl">
               {config.bookingDescription}
@@ -488,19 +487,21 @@ function Hero() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="bg-white border border-stone-200 shadow-sm p-8 md:p-12"
+            className="relative bg-stone-900 border border-white/10 p-8 md:p-12 transition-shadow duration-300"
           >
+            {/* Acento superior */}
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent" />
             <form className="space-y-10">
 
               {/* ── TOGGLE DE SERVICIO ── */}
-              <div className="grid grid-cols-3 gap-2 p-1.5 bg-stone-100 border border-stone-200 rounded-xl">
+              <div className="grid grid-cols-3 gap-2 p-1.5 bg-stone-800 border border-white/10 rounded-xl">
                 <button
                   type="button"
                   onClick={() => { setServiceType('rentacar'); setErrors({}); setTouched({}); }}
                   className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                     serviceType === 'rentacar'
                       ? 'bg-gold-500 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
+                      : 'text-stone-400 hover:text-white'
                   }`}
                 >
                   <Car className="w-4 h-4 flex-shrink-0" />
@@ -512,7 +513,7 @@ function Hero() {
                   className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                     serviceType === 'estacionamiento'
                       ? 'bg-gold-500 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
+                      : 'text-stone-400 hover:text-white'
                   }`}
                 >
                   <ParkingCircle className="w-4 h-4 flex-shrink-0" />
@@ -525,7 +526,7 @@ function Hero() {
                   className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                     serviceType === 'lavado'
                       ? 'bg-gold-500 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
+                      : 'text-stone-400 hover:text-white'
                   }`}
                 >
                   <Droplets className="w-4 h-4 flex-shrink-0" />
@@ -619,11 +620,11 @@ function Hero() {
                       name="carType" value={formData.carType}
                       onChange={handleChange} onBlur={() => handleBlur('carType')}
                       className={`${inputBase('carType')} bg-transparent`}
-                      style={{ colorScheme: 'light' }}
+                      style={{ colorScheme: 'dark' }}
                     >
-                      <option value="" className="bg-obsidian-800">Seleccionar vehículo</option>
+                      <option value="" className="bg-stone-900">Seleccionar vehículo</option>
                       {vehicles.filter(v => v.available).map((v, i) => (
-                        <option key={i} value={v.name} className="bg-obsidian-800">
+                        <option key={i} value={v.name} className="bg-stone-900">
                           {v.name} — {v.price}/día
                         </option>
                       ))}
@@ -699,11 +700,11 @@ function Hero() {
                   </div>
                   <div>
                     <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Días</p>
-                    <p className="text-stone-900 font-display text-xl font-semibold">{rentalDays}</p>
+                    <p className="text-white font-display text-xl font-semibold">{rentalDays}</p>
                   </div>
                   <div>
                     <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Subtotal + IVA</p>
-                    <p className="text-stone-900 font-display text-xl font-semibold">{priceData.subtotal}</p>
+                    <p className="text-white font-display text-xl font-semibold">{priceData.subtotal}</p>
                   </div>
                   <div>
                     <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Total</p>
@@ -721,7 +722,7 @@ function Hero() {
                   name="message" value={formData.message}
                   onChange={handleChange} rows={3}
                   placeholder="¿Alguna solicitud especial o consulta?"
-                  className="w-full bg-transparent border-b border-stone-300 focus:border-gold-500 pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 resize-none"
+                  className="w-full bg-transparent border-b border-stone-700 focus:border-gold-500 pb-3 pt-2 text-white placeholder-stone-500 focus:outline-none transition-colors duration-300 resize-none"
                 />
               </div>
 
@@ -764,12 +765,12 @@ function Hero() {
                   <div>
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Tipo de Lavado *</label>
                     <select name="washType" value={formData.washType} onChange={handleChange} onBlur={() => handleBlur('washType')}
-                      className={`${inputBase('washType')} bg-transparent`} style={{ colorScheme: 'light' }}>
-                      <option value="" className="bg-obsidian-800">Seleccionar tipo</option>
-                      <option value="Lavado Básico" className="bg-obsidian-800">Lavado Básico — Exterior</option>
-                      <option value="Lavado Completo" className="bg-obsidian-800">Lavado Completo — Ext + Int</option>
-                      <option value="Lavado Premium" className="bg-obsidian-800">Lavado Premium — + Encerado</option>
-                      <option value="Detailing" className="bg-obsidian-800">Detailing — Profesional completo</option>
+                      className={`${inputBase('washType')} bg-transparent`} style={{ colorScheme: 'dark' }}>
+                      <option value="" className="bg-stone-900">Seleccionar tipo</option>
+                      <option value="Lavado Básico" className="bg-stone-900">Lavado Básico — Exterior</option>
+                      <option value="Lavado Completo" className="bg-stone-900">Lavado Completo — Ext + Int</option>
+                      <option value="Lavado Premium" className="bg-stone-900">Lavado Premium — + Encerado</option>
+                      <option value="Detailing" className="bg-stone-900">Detailing — Profesional completo</option>
                     </select>
                     {touched.washType && errors.washType && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.washType}</p>}
                   </div>
@@ -803,7 +804,7 @@ function Hero() {
                 </label>
                 <textarea name="message" value={formData.message} onChange={handleChange} rows={3}
                   placeholder="¿Alguna solicitud especial?"
-                  className="w-full bg-transparent border-b border-stone-300 focus:border-gold-500 pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 resize-none" />
+                  className="w-full bg-transparent border-b border-stone-700 focus:border-gold-500 pb-3 pt-2 text-white placeholder-stone-500 focus:outline-none transition-colors duration-300 resize-none" />
               </div>
 
               </>)} {/* fin lavado */}
@@ -903,7 +904,7 @@ function Hero() {
                 <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Notas adicionales</label>
                 <textarea name="message" value={formData.message} onChange={handleChange} rows={3}
                   placeholder="¿Alguna solicitud especial?"
-                  className="w-full bg-transparent border-b border-stone-300 focus:border-gold-500 pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 resize-none" />
+                  className="w-full bg-transparent border-b border-stone-700 focus:border-gold-500 pb-3 pt-2 text-white placeholder-stone-500 focus:outline-none transition-colors duration-300 resize-none" />
               </div>
 
               </>)} {/* fin estacionamiento */}

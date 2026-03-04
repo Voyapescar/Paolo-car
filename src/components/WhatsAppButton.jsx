@@ -20,8 +20,8 @@ function WhatsAppButton() {
       className="fixed bottom-8 right-8 z-50 group"
       aria-label="Contactar por WhatsApp"
     >
-      {/* Fondo oscuro con borde dorado sutil */}
-      <div className="relative w-14 h-14 bg-obsidian-800 border border-gold-500/40 group-hover:border-gold-500 flex items-center justify-center transition-all duration-300 shadow-gold">
+      {/* Fondo negro con borde rojo sutil */}
+      <div className="relative w-14 h-14 bg-stone-900 border border-gold-500/40 group-hover:border-gold-500 flex items-center justify-center transition-all duration-300 shadow-gold">
         {/* Ping dorado */}
         <span className="absolute inset-0 border border-gold-500/20 animate-ping" />
 

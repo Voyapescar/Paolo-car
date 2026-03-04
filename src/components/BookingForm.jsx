@@ -429,8 +429,10 @@ function BookingForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="bg-white border border-stone-200 rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-dark"
+          className="relative bg-white border border-stone-200/80 rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-card transition-shadow duration-300 hover:shadow-card-hover"
         >
+          {/* Acento superior */}
+          <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-3xl bg-gradient-to-r from-transparent via-gold-500/50 to-transparent" />
           <form className="space-y-7">
 
             {/* Selector de servicio */}

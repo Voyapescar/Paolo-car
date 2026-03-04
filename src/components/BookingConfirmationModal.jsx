@@ -19,20 +19,20 @@ function BookingConfirmationModal({ show, onClose, bookingData, priceData }) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.92, opacity: 0, y: 20 }}
             transition={{ type: 'spring', duration: 0.5 }}
-            className="bg-white border border-gold-500/20 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            className="bg-stone-900 border border-white/10 max-w-lg w-full max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
-            <div className="border-b border-stone-100 px-8 py-6 flex items-center justify-between">
+            <div className="border-b border-white/10 px-8 py-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 border border-gold-500/40 flex items-center justify-center">
                   <Check className="w-5 h-5 text-gold-500" />
                 </div>
                 <div>
-                  <h2 className="font-display text-xl font-semibold text-stone-900">¡Reserva Enviada!</h2>
+                  <h2 className="font-display text-xl font-semibold text-white">¡Reserva Enviada!</h2>
                   <p className="text-stone-400 text-xs tracking-wider">Tu solicitud fue enviada exitosamente</p>
                 </div>
               </div>
-              <button onClick={onClose} className="text-stone-400 hover:text-stone-700 transition-colors">
+              <button onClick={onClose} className="text-stone-400 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -40,7 +40,7 @@ function BookingConfirmationModal({ show, onClose, bookingData, priceData }) {
             {/* Contenido */}
             <div className="p-8 space-y-6">
               {/* Cliente */}
-              <div className="border border-stone-100 p-5">
+              <div className="border border-white/10 p-5">
                 <p className="section-label mb-4">Cliente</p>
                 <div className="space-y-3">
                   {[
@@ -50,14 +50,14 @@ function BookingConfirmationModal({ show, onClose, bookingData, priceData }) {
                   ].map(([label, val]) => (
                     <div key={label} className="flex justify-between items-center">
                       <span className="text-stone-400 text-sm">{label}</span>
-                      <span className="text-stone-900 text-sm font-medium">{val}</span>
+                      <span className="text-white text-sm font-medium">{val}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Reserva */}
-              <div className="border border-stone-100 p-5">
+              <div className="border border-white/10 p-5">
                 <p className="section-label mb-4">Reserva</p>
                 <div className="space-y-3">
                   {[
@@ -68,7 +68,7 @@ function BookingConfirmationModal({ show, onClose, bookingData, priceData }) {
                   ].map(([label, val]) => (
                     <div key={label} className="flex justify-between items-center">
                       <span className="text-stone-400 text-sm">{label}</span>
-                      <span className="text-stone-900 text-sm font-medium">{val}</span>
+                      <span className="text-white text-sm font-medium">{val}</span>
                     </div>
                   ))}
                 </div>
@@ -86,7 +86,7 @@ function BookingConfirmationModal({ show, onClose, bookingData, priceData }) {
                   ].map(([label, val]) => (
                     <div key={label} className="flex justify-between">
                       <span className="text-stone-400 text-sm">{label}</span>
-                      <span className="text-stone-900 text-sm">{val}</span>
+                      <span className="text-white text-sm">{val}</span>
                     </div>
                   ))}
                   <div className="border-t border-gold-500/20 pt-3 mt-3 flex justify-between">

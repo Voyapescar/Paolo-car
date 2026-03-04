@@ -11,9 +11,9 @@ function Notification({ show, onClose, type = 'success', title, message, duratio
   }, [show, duration, onClose]);
 
   const configs = {
-    success: { Icon: CheckCircle, border: 'border-gold-500/30', iconColor: 'text-gold-400', titleColor: 'text-stone-900' },
-    error:   { Icon: XCircle,     border: 'border-red-500/30',  iconColor: 'text-red-400',  titleColor: 'text-stone-900' },
-    warning: { Icon: AlertCircle, border: 'border-gold-500/40', iconColor: 'text-gold-500', titleColor: 'text-stone-900' },
+    success: { Icon: CheckCircle, border: 'border-gold-500/30', iconColor: 'text-gold-400', titleColor: 'text-white' },
+    error:   { Icon: XCircle,     border: 'border-red-500/30',  iconColor: 'text-red-400',  titleColor: 'text-white' },
+    warning: { Icon: AlertCircle, border: 'border-gold-500/40', iconColor: 'text-gold-500', titleColor: 'text-white' },
   };
 
   const c = configs[type] || configs.success;
@@ -34,11 +34,11 @@ function Notification({ show, onClose, type = 'success', title, message, duratio
             exit={{ scale: 0.92, opacity: 0, y: 20 }}
             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
             onClick={e => e.stopPropagation()}
-            className={`bg-white border ${c.border} max-w-md w-full p-8 relative`}
+            className={`bg-stone-900 border ${c.border} max-w-md w-full p-8 relative`}
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 transition-colors"
+              className="absolute top-4 right-4 text-stone-500 hover:text-white transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -47,7 +47,7 @@ function Notification({ show, onClose, type = 'success', title, message, duratio
               <c.Icon className={`w-6 h-6 ${c.iconColor} flex-shrink-0 mt-0.5`} />
               <div>
                 <h3 className={`font-display text-lg font-semibold ${c.titleColor} mb-2`}>{title}</h3>
-                <p className="text-stone-500 text-sm leading-relaxed">{message}</p>
+                <p className="text-stone-400 text-sm leading-relaxed">{message}</p>
               </div>
             </div>
 

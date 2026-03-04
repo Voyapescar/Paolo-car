@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, Car, ParkingCircle, Sparkles } from 'lucide-react';
+import logoImg from '../assets/images/Paolocar__2_-removebg-preview.png';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,11 +40,11 @@ function Navbar() {
 
   // Colores adaptativos: blanco sobre foto oscura, oscuro sobre fondo claro
   const linkCls = scrolled
-    ? 'text-stone-500 hover:text-stone-900'
+    ? 'text-stone-300 hover:text-gold-500'
     : 'text-white/80 hover:text-white';
-  const logoCls   = scrolled ? 'text-stone-900' : 'text-white';
+  const logoCls   = scrolled ? 'text-white' : 'text-white';
   const sublogoCls = scrolled ? 'text-gold-500' : 'text-white/60';
-  const mobileBtnCls = scrolled ? 'text-stone-700' : 'text-white';
+  const mobileBtnCls = scrolled ? 'text-stone-300' : 'text-white';
 
   return (
     <motion.nav
@@ -52,20 +53,19 @@ function Navbar() {
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed w-full top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-xl border-b border-stone-200 shadow-sm'
+          ? 'bg-stone-950/97 backdrop-blur-xl border-b border-white/5 shadow-md'
           : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="/" className="flex flex-col leading-none group">
-            <span className={`font-display text-2xl font-bold tracking-wide transition-colors duration-300 group-hover:text-gold-500 ${logoCls}`}>
-              PAOLO
-            </span>
-            <span className={`text-[10px] tracking-[0.35em] uppercase font-medium transition-colors duration-300 ${sublogoCls}`}>
-              Rent a Car
-            </span>
+          <a href="/" className="flex items-center group mt-10">
+            <img
+              src={logoImg}
+              alt="Paolo Rent a Car"
+              className="h-64 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+            />
           </a>
 
           {/* Desktop menu */}
@@ -107,19 +107,19 @@ function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.97 }}
                     transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-white border border-stone-200 shadow-xl overflow-hidden"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-stone-950 border border-white/10 shadow-xl overflow-hidden"
                   >
                     {services.map(({ icon: Icon, label, description }) => (
                       <button
                         key={label}
                         onClick={() => setServicesOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-stone-50 transition-colors duration-200 group/item border-b border-stone-100 last:border-0"
+                    className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-white/5 transition-colors duration-200 group/item border-b border-white/5 last:border-0"
                       >
-                        <span className="flex-shrink-0 w-8 h-8 bg-stone-100 flex items-center justify-center group-hover/item:bg-gold-500/10 transition-colors duration-200">
+                        <span className="flex-shrink-0 w-8 h-8 bg-white/5 flex items-center justify-center group-hover/item:bg-gold-500/10 transition-colors duration-200">
                           <Icon className="w-4 h-4 text-gold-500" />
                         </span>
                         <span className="flex flex-col">
-                          <span className="text-xs font-semibold text-stone-800 tracking-wide uppercase">{label}</span>
+                          <span className="text-xs font-semibold text-stone-200 tracking-wide uppercase">{label}</span>
                           <span className="text-[10px] text-stone-400">{description}</span>
                         </span>
                       </button>
@@ -158,7 +158,7 @@ function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-obsidian-900 border-t border-stone-200 overflow-hidden"
+            className="md:hidden bg-stone-950 border-t border-white/5 overflow-hidden"
           >
             <div className="px-6 py-6 space-y-1">
               {menuItems.map((item, i) => (
@@ -169,7 +169,7 @@ function Navbar() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
                   onClick={() => setIsOpen(false)}
-                  className="block py-3 text-stone-500 hover:text-gold-500 text-sm tracking-[0.15em] uppercase border-b border-stone-100 transition-colors"
+                  className="block py-3 text-stone-400 hover:text-gold-500 text-sm tracking-[0.15em] uppercase border-b border-white/5 transition-colors"
                 >
                   {item.label}
                 </motion.a>
@@ -179,11 +179,11 @@ function Navbar() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: menuItems.length * 0.06 }}
-                className="border-b border-stone-100"
+                className="border-b border-white/5"
               >
                 <button
                   onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                  className="w-full flex items-center justify-between py-3 text-stone-500 hover:text-gold-500 text-sm tracking-[0.15em] uppercase transition-colors"
+                  className="w-full flex items-center justify-between py-3 text-stone-400 hover:text-gold-500 text-sm tracking-[0.15em] uppercase transition-colors"
                 >
                   Servicios
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${mobileServicesOpen ? 'rotate-180 text-gold-400' : ''}`} />
@@ -201,7 +201,7 @@ function Navbar() {
                         {services.map(({ icon: Icon, label }) => (
                           <div
                             key={label}
-                            className="flex items-center gap-3 py-2 pl-3 text-stone-400 text-xs tracking-widest uppercase"
+                            className="flex items-center gap-3 py-2 pl-3 text-stone-500 text-xs tracking-widest uppercase"
                           >
                             <Icon className="w-3.5 h-3.5 text-gold-500" />
                             {label}

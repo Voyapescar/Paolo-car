@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
+import logoImg from '../assets/images/Paolocar__2_-removebg-preview.png';
 
 function Footer() {
   const { config } = useConfig();
@@ -13,7 +14,7 @@ function Footer() {
   ];
 
   return (
-    <footer className="bg-obsidian-900 border-t border-stone-200">
+    <footer className="bg-stone-900 border-t border-stone-800">
       {/* Línea dorada superior */}
       <div className="h-px bg-gradient-to-r from-transparent via-gold-500 to-transparent" />
 
@@ -26,13 +27,12 @@ function Footer() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <a href="/" className="inline-flex flex-col items-center gap-1">
-            <span className="font-display text-4xl font-bold text-stone-900 tracking-wide">
-              PAOLO
-            </span>
-            <span className="text-[10px] tracking-[0.5em] text-gold-500 uppercase">
-              Rent a Car
-            </span>
+          <a href="/" className="inline-flex flex-col items-center gap-3 group">
+            <img
+              src={logoImg}
+              alt="Paolo Rent a Car"
+              className="h-52 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+            />
           </a>
           <p className="text-stone-400 text-sm mt-4 max-w-xs mx-auto font-light">
             {config.footerDescription}
@@ -59,8 +59,8 @@ function Footer() {
         </motion.nav>
 
         {/* Línea separadora */}
-        <div className="border-t border-stone-200 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-stone-400 text-xs tracking-wider">
+        <div className="border-t border-stone-800 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-stone-500 text-xs tracking-wider">
             <span>© {new Date().getFullYear()} Paolo Rent a Car. Todos los derechos reservados.</span>
             <span>Iquique, Chile</span>
           </div>

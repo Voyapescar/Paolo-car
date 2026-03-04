@@ -7,39 +7,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Acento principal: naranja quemado (Hermès-like)
+        // Acento principal: rojo racing
         gold: {
-          50:  '#FFF4EE',
-          100: '#FFE4CC',
-          200: '#FFC893',
-          300: '#FFA05A',
-          400: '#EA580C',
-          500: '#C2410C',
-          600: '#9A3412',
-          700: '#7C2D12',
-          800: '#5C1700',
-          900: '#3D0E00',
+          50:  '#FFF0F0',
+          100: '#FECACA',
+          200: '#FCA5A5',
+          300: '#F87171',
+          400: '#EF4444',
+          500: '#DC2626',
+          600: '#B91C1C',
+          700: '#991B1B',
+          800: '#7F1D1D',
+          900: '#450A0A',
         },
         cream: {
           50:  '#FAFAF9',
           100: '#F5F5F4',
-          200: '#0F0F0E',
-          300: '#3D3D3D',
+          200: '#1a1a1a',
+          300: '#333333',
         },
         obsidian: {
-          800: '#FFFFFF',
-          900: '#F9F8F6',
+          800: '#1e1e1e',
+          900: '#111111',
         },
       },
       fontFamily: {
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Bebas Neue', 'Impact', 'sans-serif'],
       },
       boxShadow: {
         'gold': '0 0 30px rgba(194, 65, 12, 0.15)',
         'gold-lg': '0 0 60px rgba(194, 65, 12, 0.20)',
         'dark': '0 4px 24px rgba(0,0,0,0.07)',
-        'card': '0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)',
+        'card': '0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 24px 48px rgba(0,0,0,0.06)',
+        'card-hover': '0 2px 4px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.10), 0 32px 64px rgba(0,0,0,0.07)',
       },
       animation: {
         'fade-up': 'fadeUp 0.8s ease-out both',

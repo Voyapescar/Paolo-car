@@ -11,17 +11,29 @@
     scroll-behavior: smooth;
   }
 
+  html {
+    background: #111111;
+    background-attachment: fixed;
+    min-height: 100%;
+  }
+
+  @media (max-width: 768px) {
+    html {
+      background-attachment: scroll;
+    }
+  }
+
   body {
-    background-color: #F9F8F6;
-    color: #0F0F0E;
-    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: transparent;
+    color: #f5f5f5;
+    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: rgba(194, 65, 12, 0.15);
-    color: #0F0F0E;
+    background-color: rgba(220, 38, 38, 0.35);
+    color: #ffffff;
   }
 
   ::-webkit-scrollbar {
@@ -29,11 +41,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #F9F8F6;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #C2410C;
+    background: #DC2626;
     border-radius: 2px;
   }
 }
@@ -77,15 +89,20 @@
 
   /* Input de línea inferior */
   .input-underline {
-    @apply w-full bg-transparent border-0 border-b border-stone-300
-           pb-3 pt-2 text-stone-900 placeholder-stone-400
+    @apply w-full bg-transparent border-0 border-b border-stone-700
+           pb-3 pt-2 text-white placeholder-stone-500
            focus:outline-none focus:border-gold-500
            transition-colors duration-300;
   }
 
+  input[type="date"],
+  input[type="time"] {
+    color-scheme: dark;
+  }
+
   /* Tarjeta con borde sutil */
   .card-dark {
-    @apply bg-obsidian-800 border border-stone-200;
+    @apply bg-obsidian-800 border-l-4 border-l-gold-500 border border-white/5;
   }
 }
 
