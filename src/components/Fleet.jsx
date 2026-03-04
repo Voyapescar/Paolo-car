@@ -20,12 +20,12 @@ function Fleet() {
         >
           <p className="section-label mb-4">— Flota</p>
           <div className="flex items-end gap-8">
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-cream-200">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900">
               {config.fleetTitle || 'Nuestra Flota'}
             </h2>
-            <div className="hidden md:block mb-3 flex-1 h-px bg-white/8" />
+            <div className="hidden md:block mb-3 flex-1 h-px bg-stone-200" />
           </div>
-          <p className="text-white/40 mt-4 max-w-lg">
+          <p className="text-stone-400 mt-4 max-w-lg">
             {config.fleetSubtitle || 'Vehículos seleccionados para cada ocasión'}
           </p>
         </motion.div>
@@ -41,7 +41,7 @@ function Fleet() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.8, delay: 0.05 * index, ease: [0.22, 1, 0.36, 1] }}
-                className={`group grid md:grid-cols-2 border border-white/5 hover:border-gold-500/30 transition-colors duration-500 overflow-hidden ${
+                className={`group grid md:grid-cols-2 border border-stone-200 hover:border-gold-400/50 transition-colors duration-500 overflow-hidden ${
                   !car.available ? 'opacity-60' : ''
                 }`}
               >
@@ -64,13 +64,13 @@ function Fleet() {
                   <div
                     className={`absolute inset-0 ${
                       isEven
-                        ? 'bg-gradient-to-r from-transparent to-obsidian-800/80'
-                        : 'bg-gradient-to-l from-transparent to-obsidian-800/80'
+                        ? 'bg-gradient-to-r from-transparent to-white/90'
+                        : 'bg-gradient-to-l from-transparent to-white/90'
                     } opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                   />
                   {/* Badge no disponible */}
                   {!car.available && (
-                    <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-obsidian-900/90 border border-gold-500/30 px-3 py-1.5">
+                    <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-white/95 border border-gold-500/30 px-3 py-1.5">
                       <Clock className="w-3.5 h-3.5 text-gold-500" />
                       <span className="text-gold-400 text-xs tracking-widest uppercase">Próximamente</span>
                     </div>
@@ -84,22 +84,22 @@ function Fleet() {
                   }`}
                 >
                   <div>
-                    <h3 className="font-display text-3xl md:text-4xl font-bold text-cream-200 mb-1">
+                    <h3 className="font-display text-3xl md:text-4xl font-bold text-stone-900 mb-1">
                       {car.name}
                     </h3>
-                    <p className="text-white/40 text-sm tracking-wider uppercase mb-8">
+                    <p className="text-stone-400 text-sm tracking-wider uppercase mb-8">
                       {car.model}
                     </p>
 
                     {/* Precio */}
-                    <div className="mb-8 pb-8 border-b border-white/8">
+                    <div className="mb-8 pb-8 border-b border-stone-200">
                       <div className="flex items-baseline gap-2">
                         <span className="font-display text-4xl font-bold text-gold-500">
                           {car.price}
                         </span>
-                        <span className="text-white/30 text-sm">/día</span>
+                        <span className="text-stone-400 text-sm">/día</span>
                       </div>
-                      <p className="text-white/20 text-xs tracking-widest uppercase mt-1">
+                      <p className="text-stone-300 text-xs tracking-widest uppercase mt-1">
                         Periodo de 24 horas · IVA incluido
                       </p>
                     </div>
@@ -107,7 +107,7 @@ function Fleet() {
                     {/* Features */}
                     <ul className="space-y-3 mb-10">
                       {car.features.map((feat, i) => (
-                        <li key={i} className="flex items-center gap-3 text-white/60 text-sm">
+                        <li key={i} className="flex items-center gap-3 text-stone-500 text-sm">
                           <span className="w-4 h-px bg-gold-500 flex-shrink-0" />
                           {feat}
                         </li>
@@ -122,7 +122,7 @@ function Fleet() {
                         <span>Reservar este vehículo</span>
                       </a>
                     ) : (
-                      <span className="text-xs tracking-[0.2em] uppercase text-white/20 border border-white/10 px-6 py-3 inline-block">
+                      <span className="text-xs tracking-[0.2em] uppercase text-stone-400 border border-stone-200 px-6 py-3 inline-block">
                         Disponible pronto
                       </span>
                     )}

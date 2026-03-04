@@ -8,25 +8,25 @@ export default {
     extend: {
       colors: {
         gold: {
-          100: '#FFF7ED',
-          200: '#FED7AA',
-          300: '#FDBA74',
-          400: '#FB923C',
-          500: '#F97316',
-          600: '#EA580C',
-          700: '#C2410C',
-          800: '#9A3412',
-          900: '#7C2D12',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#F59E0B',
+          500: '#D97706',
+          600: '#B45309',
+          700: '#92400E',
+          800: '#78350F',
+          900: '#451A03',
         },
         cream: {
-          50:  '#FFFBF7',
-          100: '#FFF4E8',
-          200: '#F5EDE0',
-          300: '#EAE0D5',
+          50:  '#FAFAF9',
+          100: '#F5F5F4',
+          200: '#1C1917',
+          300: '#44403C',
         },
         obsidian: {
-          800: '#141210',
-          900: '#0A0A0A',
+          800: '#FFFFFF',
+          900: '#F7F4EF',
         },
       },
       fontFamily: {
@@ -34,9 +34,9 @@ export default {
         display: ['Playfair Display', 'Georgia', 'serif'],
       },
       boxShadow: {
-        'gold': '0 0 30px rgba(249, 115, 22, 0.3)',
-        'gold-lg': '0 0 60px rgba(249, 115, 22, 0.4)',
-        'dark': '0 20px 60px rgba(0,0,0,0.6)',
+        'gold': '0 0 30px rgba(217, 119, 6, 0.25)',
+        'gold-lg': '0 0 60px rgba(217, 119, 6, 0.35)',
+        'dark': '0 4px 32px rgba(0,0,0,0.10)',
       },
       animation: {
         'fade-up': 'fadeUp 0.8s ease-out both',

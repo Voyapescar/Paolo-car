@@ -356,8 +356,8 @@ function Hero() {
   };
 
   const inputBase = (field) =>
-    `w-full bg-transparent border-b pb-3 pt-2 text-cream-200 placeholder-white/30 focus:outline-none transition-colors duration-300 ${
-      touched[field] && errors[field] ? 'border-red-500 focus:border-red-400' : 'border-white/20 focus:border-gold-500'
+    `w-full bg-transparent border-b pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 ${
+      touched[field] && errors[field] ? 'border-red-500 focus:border-red-400' : 'border-stone-300 focus:border-gold-500'
     }`;
 
   const today = new Date().toISOString().split('T')[0];
@@ -374,8 +374,8 @@ function Hero() {
             className="w-full h-full object-cover"
           />
           {/* Gradiente oscuro editorial */}
-          <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-obsidian-900/70 to-obsidian-900/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-obsidian-900/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
         </div>
 
         {/* Contenido central */}
@@ -398,7 +398,7 @@ function Hero() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-cream-200 leading-[0.9] mb-4"
+              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.9] mb-4"
             >
               Ofrecemos
             </motion.h1>
@@ -472,12 +472,12 @@ function Hero() {
           >
             <p className="section-label mb-4">{config.bookingTitle || 'Agenda tu servicio'}</p>
             <div className="flex items-end gap-6">
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-cream-200">
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900">
                 Solicita tu <span className="italic text-gold-500">Reserva</span>
               </h2>
-              <div className="hidden md:block mb-2 flex-1 h-px bg-white/8" />
+              <div className="hidden md:block mb-2 flex-1 h-px bg-stone-200" />
             </div>
-            <p className="text-white/40 mt-4 max-w-xl">
+            <p className="text-stone-400 mt-4 max-w-xl">
               {config.bookingDescription}
             </p>
           </motion.div>
@@ -488,19 +488,19 @@ function Hero() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="bg-obsidian-800 border border-white/5 p-8 md:p-12"
+            className="bg-white border border-stone-200 shadow-sm p-8 md:p-12"
           >
             <form className="space-y-10">
 
               {/* ── TOGGLE DE SERVICIO ── */}
-              <div className="grid grid-cols-3 gap-2 p-1.5 bg-black/50 border border-white/15 rounded-xl">
+              <div className="grid grid-cols-3 gap-2 p-1.5 bg-stone-100 border border-stone-200 rounded-xl">
                 <button
                   type="button"
                   onClick={() => { setServiceType('rentacar'); setErrors({}); setTouched({}); }}
                   className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                     serviceType === 'rentacar'
-                      ? 'bg-gold-500 text-black'
-                      : 'text-white/50 hover:text-white'
+                      ? 'bg-gold-500 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
                   }`}
                 >
                   <Car className="w-4 h-4 flex-shrink-0" />
@@ -511,8 +511,8 @@ function Hero() {
                   onClick={() => { setServiceType('estacionamiento'); setErrors({}); setTouched({}); }}
                   className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                     serviceType === 'estacionamiento'
-                      ? 'bg-gold-500 text-black'
-                      : 'text-white/50 hover:text-white'
+                      ? 'bg-gold-500 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
                   }`}
                 >
                   <ParkingCircle className="w-4 h-4 flex-shrink-0" />
@@ -524,8 +524,8 @@ function Hero() {
                   onClick={() => { setServiceType('lavado'); setErrors({}); setTouched({}); }}
                   className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                     serviceType === 'lavado'
-                      ? 'bg-gold-500 text-black'
-                      : 'text-white/50 hover:text-white'
+                      ? 'bg-gold-500 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
                   }`}
                 >
                   <Droplets className="w-4 h-4 flex-shrink-0" />
@@ -540,7 +540,7 @@ function Hero() {
                 <div className="grid md:grid-cols-3 gap-x-8 gap-y-8">
                   {/* Nombre */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Nombre Completo *
                     </label>
                     <input
@@ -557,7 +557,7 @@ function Hero() {
                   </div>
                   {/* Email */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Email *
                     </label>
                     <input
@@ -574,7 +574,7 @@ function Hero() {
                   </div>
                   {/* Teléfono */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Teléfono *
                     </label>
                     <input
@@ -592,8 +592,7 @@ function Hero() {
                 </div>
               </div>
 
-              {/* Línea divisoria */}
-              <div className="border-t border-white/5" />
+              <div className="border-t border-stone-200" />
 
               {/* Fila 2: Detalles de reserva */}
               <div>
@@ -601,7 +600,7 @@ function Hero() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
                   {/* Lugar de recogida */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Lugar de Recogida
                     </label>
                     <input
@@ -613,14 +612,14 @@ function Hero() {
 
                   {/* Vehículo */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Vehículo *
                     </label>
                     <select
                       name="carType" value={formData.carType}
                       onChange={handleChange} onBlur={() => handleBlur('carType')}
                       className={`${inputBase('carType')} bg-transparent`}
-                      style={{ colorScheme: 'dark' }}
+                      style={{ colorScheme: 'light' }}
                     >
                       <option value="" className="bg-obsidian-800">Seleccionar vehículo</option>
                       {vehicles.filter(v => v.available).map((v, i) => (
@@ -638,7 +637,7 @@ function Hero() {
 
                   {/* Fecha recogida */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Fecha de Recogida *
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -647,20 +646,20 @@ function Hero() {
                         min={today} onChange={handleChange}
                         onBlur={() => handleBlur('dates')}
                         className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'dark' }}
+                        style={{ colorScheme: 'light' }}
                       />
                       <input
                         type="time" name="pickupTime" value={formData.pickupTime}
                         onChange={handleChange}
                         className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'dark' }}
+                        style={{ colorScheme: 'light' }}
                       />
                     </div>
                   </div>
 
                   {/* Fecha devolución */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Fecha de Devolución *
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -669,13 +668,13 @@ function Hero() {
                         min={formData.pickupDate || today} onChange={handleChange}
                         onBlur={() => handleBlur('dates')}
                         className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'dark' }}
+                        style={{ colorScheme: 'light' }}
                       />
                       <input
                         type="time" name="returnTime" value={formData.returnTime}
                         onChange={handleChange}
                         className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'dark' }}
+                        style={{ colorScheme: 'light' }}
                       />
                     </div>
                     {touched.dates && errors.dates && (
@@ -695,34 +694,34 @@ function Hero() {
                   className="border border-gold-500/20 bg-gold-500/5 p-6 grid grid-cols-2 md:grid-cols-4 gap-4"
                 >
                   <div>
-                    <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Precio/día</p>
-                    <p className="text-gold-400 font-display text-xl font-semibold">{priceData.dailyPrice}</p>
+                    <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Precio/día</p>
+                    <p className="text-gold-500 font-display text-xl font-semibold">{priceData.dailyPrice}</p>
                   </div>
                   <div>
-                    <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Días</p>
-                    <p className="text-cream-200 font-display text-xl font-semibold">{rentalDays}</p>
+                    <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Días</p>
+                    <p className="text-stone-900 font-display text-xl font-semibold">{rentalDays}</p>
                   </div>
                   <div>
-                    <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Subtotal + IVA</p>
-                    <p className="text-cream-200 font-display text-xl font-semibold">{priceData.subtotal}</p>
+                    <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Subtotal + IVA</p>
+                    <p className="text-stone-900 font-display text-xl font-semibold">{priceData.subtotal}</p>
                   </div>
                   <div>
-                    <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Total</p>
-                    <p className="text-gold-400 font-display text-2xl font-bold">{priceData.total}</p>
+                    <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Total</p>
+                    <p className="text-gold-500 font-display text-2xl font-bold">{priceData.total}</p>
                   </div>
                 </motion.div>
               )}
 
               {/* Mensaje adicional */}
               <div>
-                <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                   Mensaje adicional
                 </label>
                 <textarea
                   name="message" value={formData.message}
                   onChange={handleChange} rows={3}
                   placeholder="¿Alguna solicitud especial o consulta?"
-                  className="w-full bg-transparent border-b border-white/20 focus:border-gold-500 pb-3 pt-2 text-cream-200 placeholder-white/30 focus:outline-none transition-colors duration-300 resize-none"
+                  className="w-full bg-transparent border-b border-stone-300 focus:border-gold-500 pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 resize-none"
                 />
               </div>
 
@@ -736,26 +735,26 @@ function Hero() {
                 <p className="section-label mb-6">Datos Personales</p>
                 <div className="grid md:grid-cols-3 gap-x-8 gap-y-8">
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Nombre Completo *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Nombre Completo *</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} onBlur={() => handleBlur('name')}
                       placeholder="Juan Pérez González" className={inputBase('name')} />
                     {touched.name && errors.name && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Teléfono *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Teléfono *</label>
                     <input type="tel" name="phone" value={formData.phone} onChange={handleChange} onBlur={() => handleBlur('phone')}
                       placeholder="+56 9 XXXX XXXX" className={inputBase('phone')} />
                     {touched.phone && errors.phone && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.phone}</p>}
                   </div>
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Email <span className="normal-case font-normal opacity-60">(opcional)</span></label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Email <span className="normal-case font-normal opacity-60">(opcional)</span></label>
                     <input type="email" name="email" value={formData.email} onChange={handleChange}
                       placeholder="correo@ejemplo.com" className={inputBase('email')} />
                   </div>
                 </div>
               </div>
 
-              <div className="border-t border-white/5" />
+              <div className="border-t border-stone-200" />
 
               {/* Detalles del lavado */}
               <div>
@@ -763,9 +762,9 @@ function Hero() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
                   {/* Tipo de lavado */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Tipo de Lavado *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Tipo de Lavado *</label>
                     <select name="washType" value={formData.washType} onChange={handleChange} onBlur={() => handleBlur('washType')}
-                      className={`${inputBase('washType')} bg-transparent`} style={{ colorScheme: 'dark' }}>
+                      className={`${inputBase('washType')} bg-transparent`} style={{ colorScheme: 'light' }}>
                       <option value="" className="bg-obsidian-800">Seleccionar tipo</option>
                       <option value="Lavado Básico" className="bg-obsidian-800">Lavado Básico — Exterior</option>
                       <option value="Lavado Completo" className="bg-obsidian-800">Lavado Completo — Ext + Int</option>
@@ -776,35 +775,35 @@ function Hero() {
                   </div>
                   {/* Vehículo */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Vehículo *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Vehículo *</label>
                     <input type="text" name="vehicleDescription" value={formData.vehicleDescription} onChange={handleChange} onBlur={() => handleBlur('vehicleDescription')}
                       placeholder="Toyota Corolla Blanco 2022" className={inputBase('vehicleDescription')} />
                     {touched.vehicleDescription && errors.vehicleDescription && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.vehicleDescription}</p>}
                   </div>
                   {/* Fecha */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Fecha *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Fecha *</label>
                     <input type="date" name="washDate" value={formData.washDate} min={today} onChange={handleChange} onBlur={() => handleBlur('washDate')}
-                      className={`${inputBase('washDate')} text-sm`} style={{ colorScheme: 'dark' }} />
+                      className={`${inputBase('washDate')} text-sm`} style={{ colorScheme: 'light' }} />
                     {touched.washDate && errors.washDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.washDate}</p>}
                   </div>
                   {/* Hora */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Hora Preferida</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Hora Preferida</label>
                     <input type="time" name="washTime" value={formData.washTime} onChange={handleChange}
-                      className={`${inputBase('washTime')} text-sm`} style={{ colorScheme: 'dark' }} />
+                      className={`${inputBase('washTime')} text-sm`} style={{ colorScheme: 'light' }} />
                   </div>
                 </div>
               </div>
 
               {/* Mensaje wash */}
               <div>
-                <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                   Notas adicionales
                 </label>
                 <textarea name="message" value={formData.message} onChange={handleChange} rows={3}
                   placeholder="¿Alguna solicitud especial?"
-                  className="w-full bg-transparent border-b border-white/20 focus:border-gold-500 pb-3 pt-2 text-cream-200 placeholder-white/30 focus:outline-none transition-colors duration-300 resize-none" />
+                  className="w-full bg-transparent border-b border-stone-300 focus:border-gold-500 pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 resize-none" />
               </div>
 
               </>)} {/* fin lavado */}
@@ -836,7 +835,7 @@ function Hero() {
                 </div>
               </div>
 
-              <div className="border-t border-white/5" />
+              <div className="border-t border-stone-200" />
 
               {/* Detalles del estacionamiento */}
               <div>
@@ -844,40 +843,40 @@ function Hero() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
                   {/* Fecha ingreso */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Ingreso *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Ingreso *</label>
                     <div className="grid grid-cols-2 gap-2">
                       <input type="date" name="parkingEntryDate" value={formData.parkingEntryDate}
                         min={today} onChange={handleChange} onBlur={() => handleBlur('parkingEntryDate')}
-                        className={`${inputBase('parkingEntryDate')} text-sm`} style={{ colorScheme: 'dark' }} />
+                        className={`${inputBase('parkingEntryDate')} text-sm`} style={{ colorScheme: 'light' }} />
                       <input type="time" name="parkingEntryTime" value={formData.parkingEntryTime}
                         onChange={handleChange}
-                        className={`${inputBase('parkingEntryTime')} text-sm`} style={{ colorScheme: 'dark' }} />
+                        className={`${inputBase('parkingEntryTime')} text-sm`} style={{ colorScheme: 'light' }} />
                     </div>
                     {touched.parkingEntryDate && errors.parkingEntryDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingEntryDate}</p>}
                   </div>
                   {/* Fecha salida */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Salida *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Salida *</label>
                     <div className="grid grid-cols-2 gap-2">
                       <input type="date" name="parkingExitDate" value={formData.parkingExitDate}
                         min={formData.parkingEntryDate || today} onChange={handleChange} onBlur={() => handleBlur('parkingExitDate')}
-                        className={`${inputBase('parkingExitDate')} text-sm`} style={{ colorScheme: 'dark' }} />
+                        className={`${inputBase('parkingExitDate')} text-sm`} style={{ colorScheme: 'light' }} />
                       <input type="time" name="parkingExitTime" value={formData.parkingExitTime}
                         onChange={handleChange}
-                        className={`${inputBase('parkingExitTime')} text-sm`} style={{ colorScheme: 'dark' }} />
+                        className={`${inputBase('parkingExitTime')} text-sm`} style={{ colorScheme: 'light' }} />
                     </div>
                     {touched.parkingExitDate && errors.parkingExitDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingExitDate}</p>}
                   </div>
                   {/* Vehículo */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Vehículo *</label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Vehículo *</label>
                     <input type="text" name="parkingVehicle" value={formData.parkingVehicle} onChange={handleChange} onBlur={() => handleBlur('parkingVehicle')}
                       placeholder="Toyota Corolla Blanco 2022" className={inputBase('parkingVehicle')} />
                     {touched.parkingVehicle && errors.parkingVehicle && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingVehicle}</p>}
                   </div>
                   {/* Patente */}
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Patente <span className="normal-case font-normal opacity-60">(opcional)</span></label>
+                    <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Patente <span className="normal-case font-normal opacity-60">(opcional)</span></label>
                     <input type="text" name="parkingPlate" value={formData.parkingPlate} onChange={handleChange}
                       placeholder="ABCD12" className={inputBase('parkingPlate')} />
                   </div>
@@ -893,7 +892,7 @@ function Hero() {
                 >
                   <Clock className="w-5 h-5 text-gold-400 flex-shrink-0" />
                   <div>
-                    <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Duración estimada</p>
+                    <p className="text-stone-400 text-xs tracking-widest uppercase mb-1">Duración estimada</p>
                     <p className="text-gold-400 font-display text-xl font-semibold">{formatParkingDuration(parkingHours)}</p>
                   </div>
                 </motion.div>
@@ -901,10 +900,10 @@ function Hero() {
 
               {/* Notas */}
               <div>
-                <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Notas adicionales</label>
+                <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Notas adicionales</label>
                 <textarea name="message" value={formData.message} onChange={handleChange} rows={3}
                   placeholder="¿Alguna solicitud especial?"
-                  className="w-full bg-transparent border-b border-white/20 focus:border-gold-500 pb-3 pt-2 text-cream-200 placeholder-white/30 focus:outline-none transition-colors duration-300 resize-none" />
+                  className="w-full bg-transparent border-b border-stone-300 focus:border-gold-500 pb-3 pt-2 text-stone-900 placeholder-stone-400 focus:outline-none transition-colors duration-300 resize-none" />
               </div>
 
               </>)} {/* fin estacionamiento */}

@@ -370,10 +370,10 @@ function BookingForm() {
 
   // Input class helper
   const inputCls = (field) =>
-    `w-full px-4 py-3.5 rounded-2xl border-2 bg-white/5 text-cream-200 placeholder-white/30 outline-none transition-all shadow-sm ${
+    `w-full px-4 py-3.5 rounded-2xl border-2 bg-stone-50 text-stone-900 placeholder-stone-400 outline-none transition-all shadow-sm ${
       touched[field] && errors[field]
         ? 'border-red-500 focus:border-red-400'
-        : 'border-white/10 focus:border-gold-500 hover:border-white/20'
+        : 'border-stone-200 focus:border-gold-500 hover:border-stone-300'
     } focus:ring-4 focus:ring-gold-500/10`;
 
   return (
@@ -400,10 +400,10 @@ function BookingForm() {
             <span className="text-sm font-medium text-gold-400 tracking-wide">Reserva Online</span>
           </motion.div>
 
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-cream-200 mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900 mb-4">
             {serviceType === 'lavado' ? 'Agenda tu Lavado' : serviceType === 'estacionamiento' ? 'Reserva tu Estacionamiento' : (config.bookingTitle || 'Reserva')}
           </h2>
-          <p className="text-white/40 text-lg max-w-2xl mx-auto font-light">
+          <p className="text-stone-400 text-lg max-w-2xl mx-auto font-light">
             {serviceType === 'lavado'
               ? 'Elige fecha, tipo de lavado y te confirmamos a la brevedad.'
               : serviceType === 'estacionamiento'
@@ -429,19 +429,19 @@ function BookingForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="bg-obsidian-800 border border-white/8 rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-dark"
+          className="bg-white border border-stone-200 rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-dark"
         >
           <form className="space-y-7">
 
             {/* Selector de servicio */}
-            <div className="grid grid-cols-3 gap-2 p-1.5 bg-black/40 rounded-2xl border border-white/20">
+            <div className="grid grid-cols-3 gap-2 p-1.5 bg-stone-100 rounded-2xl border border-stone-200">
               <button
                 type="button"
                 onClick={() => { setServiceType('rentacar'); setErrors({}); setTouched({}); }}
                 className={`flex items-center justify-center gap-1.5 py-3.5 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                   serviceType === 'rentacar'
-                    ? 'bg-gold-500 text-black shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-gold-500 text-white shadow-lg'
+                    : 'text-stone-500 hover:text-stone-900 hover:bg-white/70'
                 }`}
               >
                 <Car className="w-4 h-4 flex-shrink-0" />
@@ -452,8 +452,8 @@ function BookingForm() {
                 onClick={() => { setServiceType('estacionamiento'); setErrors({}); setTouched({}); }}
                 className={`flex items-center justify-center gap-1.5 py-3.5 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                   serviceType === 'estacionamiento'
-                    ? 'bg-gold-500 text-black shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-gold-500 text-white shadow-lg'
+                    : 'text-stone-500 hover:text-stone-900 hover:bg-white/70'
                 }`}
               >
                 <ParkingCircle className="w-4 h-4 flex-shrink-0" />
@@ -465,8 +465,8 @@ function BookingForm() {
                 onClick={() => { setServiceType('lavado'); setErrors({}); setTouched({}); }}
                 className={`flex items-center justify-center gap-1.5 py-3.5 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
                   serviceType === 'lavado'
-                    ? 'bg-gold-500 text-black shadow-lg'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-gold-500 text-white shadow-lg'
+                    : 'text-stone-500 hover:text-stone-900 hover:bg-white/70'
                 }`}
               >
                 <Droplets className="w-4 h-4 flex-shrink-0" />
@@ -477,7 +477,7 @@ function BookingForm() {
             {/* Nombre + Email */}
             <div className="grid md:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <User className="w-4 h-4 text-gold-500" />
                   Nombre Completo <span className="text-gold-500">*</span>
                 </label>
@@ -495,7 +495,7 @@ function BookingForm() {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}>
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <Mail className="w-4 h-4 text-gold-500" />
                   Email <span className="text-gold-500">*</span>
                 </label>
@@ -515,7 +515,7 @@ function BookingForm() {
 
             {/* Teléfono */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
-              <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+              <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                 <PhoneIcon className="w-4 h-4 text-gold-500" />
                 Teléfono <span className="text-gold-500">*</span>
               </label>
@@ -537,7 +537,7 @@ function BookingForm() {
 
             {/* Lugar de recogida */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.22 }}>
-              <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+              <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                 <MapPin className="w-4 h-4 text-gold-500" />
                 Lugar de Recogida <span className="text-gold-500">*</span>
               </label>
@@ -545,8 +545,8 @@ function BookingForm() {
                 name="pickupLocation"
                 value={formData.pickupLocation}
                 onChange={handleChange}
-                className={`${inputCls('pickupLocation')} bg-obsidian-800`}
-                style={{ colorScheme: 'dark' }}
+                className={`${inputCls('pickupLocation')} bg-white`}
+                style={{ colorScheme: 'light' }}
               >
                 <option value="Iquique">Iquique</option>
                 <option value="Aeropuerto Iquique">Aeropuerto Iquique</option>
@@ -556,7 +556,7 @@ function BookingForm() {
             {/* Fechas y Horas */}
             <div className="grid md:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 }} className="space-y-3">
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold">
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Recogida <span className="text-gold-500">*</span>
                 </label>
@@ -566,10 +566,10 @@ function BookingForm() {
                   onChange={handleChange}
                   onBlur={() => { if (formData.pickupDate && formData.returnDate) handleBlur('dates'); }}
                   className={`${inputCls('dates')} text-sm`}
-                  style={{ colorScheme: 'dark' }}
+                  style={{ colorScheme: 'light' }}
                 />
                 <div>
-                  <label className="flex items-center gap-2 text-white/40 text-xs font-medium mb-2">
+                  <label className="flex items-center gap-2 text-stone-400 text-xs font-medium mb-2">
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Recogida
                   </label>
@@ -577,13 +577,13 @@ function BookingForm() {
                     type="time" name="pickupTime" value={formData.pickupTime}
                     onChange={handleChange}
                     className={`${inputCls('pickupTime')} text-sm`}
-                    style={{ colorScheme: 'dark' }}
+                    style={{ colorScheme: 'light' }}
                   />
                 </div>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="space-y-3">
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold">
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Devolución <span className="text-gold-500">*</span>
                 </label>
@@ -593,20 +593,20 @@ function BookingForm() {
                   onChange={handleChange}
                   onBlur={() => { if (formData.pickupDate && formData.returnDate) handleBlur('dates'); }}
                   className={`${inputCls('dates')} text-sm`}
-                  style={{ colorScheme: 'dark' }}
+                  style={{ colorScheme: 'light' }}
                 />
                 <div>
-                  <label className="flex items-center gap-2 text-white/40 text-xs font-medium mb-2">
+                  <label className="flex items-center gap-2 text-stone-400 text-xs font-medium mb-2">
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Devolución
                   </label>
                   <input
                     type="time" name="returnTime" value={formData.returnTime}
                     readOnly
-                    className="w-full px-4 py-3.5 rounded-2xl border-2 border-white/5 bg-white/3 text-white/30 cursor-not-allowed outline-none shadow-sm text-sm"
+                    className="w-full px-4 py-3.5 rounded-2xl border-2 border-stone-100 bg-stone-50 text-stone-400 cursor-not-allowed outline-none shadow-sm text-sm"
                     title="La hora de devolución es igual a la de recogida (bloques de 24h)"
                   />
-                  <p className="text-xs text-white/25 mt-1">Misma hora de recogida</p>
+                  <p className="text-xs text-stone-400 mt-1">Misma hora de recogida</p>
                 </div>
               </motion.div>
             </div>
@@ -633,20 +633,20 @@ function BookingForm() {
                   </p>
                 </div>
                 {priceData && (
-                  <div className="bg-white/3 rounded-xl p-3 space-y-1.5">
+                  <div className="bg-stone-50 rounded-xl p-3 space-y-1.5">
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/40">Precio/día</span>
-                      <span className="text-cream-200 font-medium">{priceData.dailyPrice}</span>
+                      <span className="text-stone-400">Precio/día</span>
+                      <span className="text-stone-900 font-medium">{priceData.dailyPrice}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/40">Subtotal</span>
-                      <span className="text-cream-200 font-medium">{priceData.subtotal}</span>
+                      <span className="text-stone-400">Subtotal</span>
+                      <span className="text-stone-900 font-medium">{priceData.subtotal}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/40">IVA (19%)</span>
-                      <span className="text-cream-200 font-medium">{priceData.iva}</span>
+                      <span className="text-stone-400">IVA (19%)</span>
+                      <span className="text-stone-900 font-medium">{priceData.iva}</span>
                     </div>
-                    <div className="flex justify-between text-base border-t border-white/8 pt-2">
+                    <div className="flex justify-between text-base border-t border-stone-200 pt-2">
                       <span className="font-bold text-gold-400">Total</span>
                       <span className="font-bold text-gold-400 text-lg">{priceData.total}</span>
                     </div>
@@ -657,7 +657,7 @@ function BookingForm() {
 
             {/* Vehículo */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.35 }}>
-              <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+              <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                 <Car className="w-4 h-4 text-gold-500" />
                 Tipo de Vehículo <span className="text-gold-500">*</span>
               </label>
@@ -665,8 +665,8 @@ function BookingForm() {
                 name="carType" value={formData.carType}
                 onChange={handleChange} onBlur={() => handleBlur('carType')}
                 disabled={vehiclesLoading}
-                className={`${inputCls('carType')} bg-obsidian-800 ${vehiclesLoading ? 'cursor-wait opacity-60' : ''}`}
-                style={{ colorScheme: 'dark' }}
+                className={`${inputCls('carType')} bg-white ${vehiclesLoading ? 'cursor-wait opacity-60' : ''}`}
+                style={{ colorScheme: 'light' }}
               >
                 <option value="">{vehiclesLoading ? 'Cargando vehículos...' : 'Selecciona un vehículo'}</option>
                 {!vehiclesLoading && vehicles.filter(v => v.available !== false).map((v) => (
@@ -689,15 +689,15 @@ function BookingForm() {
 
             {/* Tipo de lavado */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+              <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                 <Droplets className="w-4 h-4 text-gold-500" />
                 Tipo de Lavado <span className="text-gold-500">*</span>
               </label>
               <select
                 name="washType" value={formData.washType}
                 onChange={handleChange} onBlur={() => handleBlur('washType')}
-                className={`${inputCls('washType')} bg-obsidian-800`}
-                style={{ colorScheme: 'dark' }}
+                className={`${inputCls('washType')} bg-white`}
+                style={{ colorScheme: 'light' }}
               >
                 <option value="">Selecciona un tipo de lavado</option>
                 <option value="Lavado Básico">Lavado Básico — Exterior</option>
@@ -714,7 +714,7 @@ function BookingForm() {
 
             {/* Descripción del vehículo */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-              <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+              <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                 <Car className="w-4 h-4 text-gold-500" />
                 Vehículo <span className="text-gold-500">*</span>
               </label>
@@ -734,7 +734,7 @@ function BookingForm() {
             {/* Fecha y hora del lavado */}
             <div className="grid md:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha del Lavado <span className="text-gold-500">*</span>
                 </label>
@@ -743,7 +743,7 @@ function BookingForm() {
                   min={new Date().toISOString().split('T')[0]}
                   onChange={handleChange} onBlur={() => handleBlur('washDate')}
                   className={`${inputCls('washDate')} text-sm`}
-                  style={{ colorScheme: 'dark' }}
+                  style={{ colorScheme: 'light' }}
                 />
                 {touched.washDate && errors.washDate && (
                   <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
@@ -753,7 +753,7 @@ function BookingForm() {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <Clock className="w-4 h-4 text-gold-500" />
                   Hora Preferida
                 </label>
@@ -761,7 +761,7 @@ function BookingForm() {
                   type="time" name="washTime" value={formData.washTime}
                   onChange={handleChange}
                   className={`${inputCls('washTime')} text-sm`}
-                  style={{ colorScheme: 'dark' }}
+                  style={{ colorScheme: 'light' }}
                 />
               </motion.div>
             </div>
@@ -774,7 +774,7 @@ function BookingForm() {
             {/* Fechas ingreso / salida */}
             <div className="grid md:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="space-y-3">
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold">
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Ingreso <span className="text-gold-500">*</span>
                 </label>
@@ -783,7 +783,7 @@ function BookingForm() {
                   min={new Date().toISOString().split('T')[0]}
                   onChange={handleChange} onBlur={() => handleBlur('parkingEntryDate')}
                   className={`${inputCls('parkingEntryDate')} text-sm`}
-                  style={{ colorScheme: 'dark' }}
+                  style={{ colorScheme: 'light' }}
                 />
                 {touched.parkingEntryDate && errors.parkingEntryDate && (
                   <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
@@ -791,7 +791,7 @@ function BookingForm() {
                   </motion.p>
                 )}
                 <div>
-                  <label className="flex items-center gap-2 text-white/40 text-xs font-medium mb-2">
+                  <label className="flex items-center gap-2 text-stone-400 text-xs font-medium mb-2">
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Ingreso
                   </label>
@@ -799,13 +799,13 @@ function BookingForm() {
                     type="time" name="parkingEntryTime" value={formData.parkingEntryTime}
                     onChange={handleChange}
                     className={`${inputCls('parkingEntryTime')} text-sm`}
-                    style={{ colorScheme: 'dark' }}
+                    style={{ colorScheme: 'light' }}
                   />
                 </div>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="space-y-3">
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold">
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Salida <span className="text-gold-500">*</span>
                 </label>
@@ -814,7 +814,7 @@ function BookingForm() {
                   min={formData.parkingEntryDate || new Date().toISOString().split('T')[0]}
                   onChange={handleChange} onBlur={() => handleBlur('parkingExitDate')}
                   className={`${inputCls('parkingExitDate')} text-sm`}
-                  style={{ colorScheme: 'dark' }}
+                  style={{ colorScheme: 'light' }}
                 />
                 {touched.parkingExitDate && errors.parkingExitDate && (
                   <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
@@ -822,7 +822,7 @@ function BookingForm() {
                   </motion.p>
                 )}
                 <div>
-                  <label className="flex items-center gap-2 text-white/40 text-xs font-medium mb-2">
+                  <label className="flex items-center gap-2 text-stone-400 text-xs font-medium mb-2">
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Salida
                   </label>
@@ -830,7 +830,7 @@ function BookingForm() {
                     type="time" name="parkingExitTime" value={formData.parkingExitTime}
                     onChange={handleChange}
                     className={`${inputCls('parkingExitTime')} text-sm`}
-                    style={{ colorScheme: 'dark' }}
+                    style={{ colorScheme: 'light' }}
                   />
                 </div>
               </motion.div>
@@ -855,7 +855,7 @@ function BookingForm() {
             {/* Vehículo */}
             <div className="grid md:grid-cols-2 gap-6">
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <Car className="w-4 h-4 text-gold-500" />
                   Vehículo <span className="text-gold-500">*</span>
                 </label>
@@ -873,9 +873,9 @@ function BookingForm() {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
-                <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+                <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <Hash className="w-4 h-4 text-gold-500" />
-                  Patente <span className="text-white/25 font-normal">(Opcional)</span>
+                  Patente <span className="text-stone-400 font-normal">(Opcional)</span>
                 </label>
                 <input
                   type="text" name="parkingPlate" value={formData.parkingPlate}
@@ -888,9 +888,9 @@ function BookingForm() {
 
             </>)} {/* fin estacionamiento */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }}>
-              <label className="flex items-center gap-2 text-white/60 text-sm font-semibold mb-2">
+              <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                 <MessageCircle className="w-4 h-4 text-gold-500" />
-                Mensaje Adicional <span className="text-white/25 font-normal">(Opcional)</span>
+                Mensaje Adicional <span className="text-stone-400 font-normal">(Opcional)</span>
               </label>
               <textarea
                 name="message" value={formData.message}
@@ -900,7 +900,7 @@ function BookingForm() {
                 maxLength={1000}
                 className={`${inputCls('message')} resize-none`}
               />
-              <p className="text-xs text-white/25 mt-1.5 text-right">{formData.message.length}/1000</p>
+              <p className="text-xs text-stone-400 mt-1.5 text-right">{formData.message.length}/1000</p>
             </motion.div>
 
             {/* Botones */}
@@ -937,7 +937,7 @@ function BookingForm() {
               </motion.button>
             </motion.div>
 
-            <p className="text-xs text-white/20 text-center pt-1">
+            <p className="text-xs text-stone-300 text-center pt-1">
               Al enviar este formulario aceptas nuestros términos y condiciones de servicio.
             </p>
           </form>

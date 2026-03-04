@@ -21,7 +21,7 @@ function ConfigPanel() {
     }
   };
 
-  const inputClass = "w-full bg-obsidian-900 border border-white/10 focus:border-gold-500 px-4 py-3 text-cream-200 placeholder-white/20 outline-none transition-colors duration-200 text-sm";
+  const inputClass = "w-full bg-obsidian-900 border border-stone-200 focus:border-gold-500 px-4 py-3 text-stone-900 placeholder-stone-400 outline-none transition-colors duration-200 text-sm";
 
   const tabs = [
     { id: 'hero', label: 'Hero' },
@@ -31,11 +31,11 @@ function ConfigPanel() {
   ];
 
   return (
-    <div className="bg-obsidian-800 border border-white/5 p-8">
+    <div className="bg-white border border-stone-100 p-8">
       <div className="flex items-center justify-between mb-8">
-        <h2 className="font-display text-2xl font-semibold text-cream-200">Configuración del Sitio</h2>
+        <h2 className="font-display text-2xl font-semibold text-stone-900">Configuración del Sitio</h2>
         <div className="flex gap-3">
-          <button onClick={handleReset} className="flex items-center gap-2 px-4 py-2 border border-white/10 text-white/40 hover:text-white/70 text-xs tracking-widest uppercase transition-colors">
+          <button onClick={handleReset} className="flex items-center gap-2 px-4 py-2 border border-stone-200 text-stone-500 hover:text-stone-800 text-xs tracking-widest uppercase transition-colors">
             <RotateCcw className="w-3.5 h-3.5" /> Restaurar
           </button>
           <button onClick={handleSave} className="btn-gold">
@@ -46,7 +46,7 @@ function ConfigPanel() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-8 border-b border-white/5">
+      <div className="flex gap-1 mb-8 border-b border-stone-100">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -54,7 +54,7 @@ function ConfigPanel() {
             className={`px-5 py-3 text-xs tracking-[0.15em] uppercase transition-colors duration-200 ${
               activeTab === tab.id
                 ? 'text-gold-400 border-b border-gold-500'
-                : 'text-white/30 hover:text-white/60'
+                : 'text-stone-400 hover:text-stone-700'
             }`}
           >
             {tab.label}
@@ -101,7 +101,7 @@ function ConfigPanel() {
 function Field({ label, value, onChange, inputClass, textarea }) {
   return (
     <div>
-      <label className="block text-white/30 text-xs tracking-[0.2em] uppercase mb-2">{label}</label>
+      <label className="block text-stone-400 text-xs tracking-[0.2em] uppercase mb-2">{label}</label>
       {textarea ? (
         <textarea value={value || ''} onChange={e => onChange(e.target.value)} rows={3} className={`${inputClass} resize-none`} />
       ) : (

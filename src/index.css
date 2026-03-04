@@ -12,16 +12,16 @@
   }
 
   body {
-    background-color: #0A0A0A;
-    color: #F5EDE0;
+    background-color: #F7F4EF;
+    color: #1C1917;
     font-family: 'DM Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: rgba(249, 115, 22, 0.35);
-    color: #F5EDE0;
+    background-color: rgba(217, 119, 6, 0.20);
+    color: #1C1917;
   }
 
   ::-webkit-scrollbar {
@@ -29,11 +29,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #0A0A0A;
+    background: #F7F4EF;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #F97316;
+    background: #D97706;
     border-radius: 3px;
   }
 }
@@ -58,7 +58,7 @@
   }
 
   .btn-gold:hover {
-    @apply text-obsidian-900;
+    @apply text-white;
   }
 
   .btn-gold span {
@@ -77,15 +77,15 @@
 
   /* Input de línea inferior */
   .input-underline {
-    @apply w-full bg-transparent border-0 border-b border-white/20
-           pb-3 pt-2 text-cream-200 placeholder-white/30
+    @apply w-full bg-transparent border-0 border-b border-stone-300
+           pb-3 pt-2 text-stone-900 placeholder-stone-400
            focus:outline-none focus:border-gold-500
            transition-colors duration-300;
   }
 
-  /* Tarjeta oscura con borde sutil */
+  /* Tarjeta con borde sutil */
   .card-dark {
-    @apply bg-obsidian-800 border border-white/5;
+    @apply bg-obsidian-800 border border-stone-200;
   }
 }
 

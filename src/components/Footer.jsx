@@ -13,7 +13,7 @@ function Footer() {
   ];
 
   return (
-    <footer className="bg-obsidian-900 border-t border-white/5">
+    <footer className="bg-obsidian-900 border-t border-stone-200">
       {/* Línea dorada superior */}
       <div className="h-px bg-gradient-to-r from-transparent via-gold-500 to-transparent" />
 
@@ -27,14 +27,14 @@ function Footer() {
           className="text-center mb-12"
         >
           <a href="/" className="inline-flex flex-col items-center gap-1">
-            <span className="font-display text-4xl font-bold text-cream-200 tracking-wide">
+            <span className="font-display text-4xl font-bold text-stone-900 tracking-wide">
               PAOLO
             </span>
             <span className="text-[10px] tracking-[0.5em] text-gold-500 uppercase">
               Rent a Car
             </span>
           </a>
-          <p className="text-white/25 text-sm mt-4 max-w-xs mx-auto font-light">
+          <p className="text-stone-400 text-sm mt-4 max-w-xs mx-auto font-light">
             {config.footerDescription}
           </p>
         </motion.div>
@@ -51,7 +51,7 @@ function Footer() {
             <a
               key={i}
               href={link.href}
-              className="text-white/30 hover:text-gold-400 text-xs tracking-[0.15em] uppercase transition-colors duration-300"
+              className="text-stone-400 hover:text-gold-500 text-xs tracking-[0.15em] uppercase transition-colors duration-300"
             >
               {link.label}
             </a>
@@ -59,8 +59,8 @@ function Footer() {
         </motion.nav>
 
         {/* Línea separadora */}
-        <div className="border-t border-white/5 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-white/20 text-xs tracking-wider">
+        <div className="border-t border-stone-200 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-stone-400 text-xs tracking-wider">
             <span>© {new Date().getFullYear()} Paolo Rent a Car. Todos los derechos reservados.</span>
             <span>Iquique, Chile</span>
           </div>

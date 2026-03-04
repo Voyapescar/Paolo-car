@@ -12,9 +12,9 @@ function WhatsAppBanner() {
   const url = `https://wa.me/${phone}?text=${encodeURIComponent('¡Hola! Quiero consultar sobre sus servicios.')}`;
 
   return (
-    <div className="bg-obsidian-800 border-t border-white/5">
+    <div className="bg-stone-100 border-t border-stone-200">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-white/30 text-xs tracking-[0.15em] uppercase">
+        <p className="text-stone-500 text-xs tracking-[0.15em] uppercase">
           ¿Tienes dudas? Contáctanos por WhatsApp
         </p>
         <a

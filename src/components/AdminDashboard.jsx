@@ -91,7 +91,7 @@ function AdminDashboard() {
     setFormData({ ...formData, features: f });
   };
 
-  const inputClass = "w-full bg-obsidian-900 border border-white/10 focus:border-gold-500 px-4 py-3 text-cream-200 placeholder-white/20 outline-none transition-colors duration-200 text-sm";
+  const inputClass = "w-full bg-obsidian-900 border border-stone-200 focus:border-gold-500 px-4 py-3 text-stone-900 placeholder-stone-400 outline-none transition-colors duration-200 text-sm";
 
   const navItems = [
     { id: 'vehicles', label: 'Vehículos', Icon: LayoutGrid },
@@ -101,14 +101,14 @@ function AdminDashboard() {
   return (
     <div className="min-h-screen bg-obsidian-900 flex">
       {/* ── SIDEBAR ─────────────────────────────────────────── */}
-      <aside className="w-64 bg-obsidian-800 border-r border-white/5 flex flex-col fixed top-0 left-0 h-full z-30">
+      <aside className="w-64 bg-white border-r border-stone-100 flex flex-col fixed top-0 left-0 h-full z-30">
         {/* Logo */}
-        <div className="px-8 py-8 border-b border-white/5">
+        <div className="px-8 py-8 border-b border-stone-100">
           <a href="/" className="flex flex-col gap-0.5">
-            <span className="font-display text-2xl font-bold text-cream-200">PAOLO</span>
+            <span className="font-display text-2xl font-bold text-stone-900">PAOLO</span>
             <span className="text-[9px] tracking-[0.5em] text-gold-500 uppercase">Rent a Car</span>
           </a>
-          <p className="text-white/20 text-[10px] tracking-wider uppercase mt-3">Admin Panel</p>
+          <p className="text-stone-300 text-[10px] tracking-wider uppercase mt-3">Admin Panel</p>
         </div>
 
         {/* Nav */}
@@ -120,7 +120,7 @@ function AdminDashboard() {
               className={`w-full flex items-center gap-3 px-4 py-3 text-sm tracking-[0.1em] uppercase transition-all duration-200 ${
                 activeSection === id
                   ? 'text-gold-400 border-l border-gold-500 bg-gold-500/5'
-                  : 'text-white/30 hover:text-white/60 hover:bg-white/3'
+                  : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -130,10 +130,10 @@ function AdminDashboard() {
         </nav>
 
         {/* Footer del sidebar */}
-        <div className="px-4 py-6 border-t border-white/5 space-y-2">
+        <div className="px-4 py-6 border-t border-stone-100 space-y-2">
           <button
             onClick={() => navigate('/')}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-white/25 hover:text-white/50 text-xs tracking-widest uppercase transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-stone-400 hover:text-stone-600 text-xs tracking-widest uppercase transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             Ver Sitio
@@ -151,11 +151,11 @@ function AdminDashboard() {
       {/* ── CONTENIDO PRINCIPAL ─────────────────────────────── */}
       <main className="flex-1 ml-64 min-h-screen">
         {/* Header */}
-        <div className="border-b border-white/5 px-10 py-6">
-          <h1 className="font-display text-2xl font-semibold text-cream-200">
+        <div className="border-b border-stone-100 px-10 py-6">
+          <h1 className="font-display text-2xl font-semibold text-stone-900">
             {activeSection === 'vehicles' ? 'Gestión de Vehículos' : 'Configuración del Sitio'}
           </h1>
-          <p className="text-white/25 text-sm mt-1">
+          <p className="text-stone-400 text-sm mt-1">
             {activeSection === 'vehicles'
               ? `${vehicles.length} vehículo${vehicles.length !== 1 ? 's' : ''} registrado${vehicles.length !== 1 ? 's' : ''}`
               : 'Edita los textos e información del sitio'}
@@ -168,8 +168,8 @@ function AdminDashboard() {
           ) : (
             <div className="grid xl:grid-cols-2 gap-8">
               {/* ── FORMULARIO ── */}
-              <div className="bg-obsidian-800 border border-white/5 p-8">
-                <h2 className="font-display text-xl font-semibold text-cream-200 mb-8 flex items-center gap-3">
+              <div className="bg-white border border-stone-100 p-8">
+                <h2 className="font-display text-xl font-semibold text-stone-900 mb-8 flex items-center gap-3">
                   <Plus className="w-4 h-4 text-gold-500" />
                   {isEditing ? 'Editar Vehículo' : 'Nuevo Vehículo'}
                 </h2>
@@ -212,7 +212,7 @@ function AdminDashboard() {
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
-                      className="w-full flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-gold-500/50 py-3 text-white/40 hover:text-gold-400 text-xs tracking-widest uppercase transition-all duration-200 disabled:opacity-50 disabled:cursor-wait mb-3"
+                      className="w-full flex items-center justify-center gap-2 border border-dashed border-stone-300 hover:border-gold-500/50 py-3 text-stone-500 hover:text-gold-400 text-xs tracking-widest uppercase transition-all duration-200 disabled:opacity-50 disabled:cursor-wait mb-3"
                     >
                       {isUploading
                         ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Subiendo...</>
@@ -251,7 +251,7 @@ function AdminDashboard() {
                     </div>
                     <button type="button"
                       onClick={() => setFormData({ ...formData, features: [...formData.features, ''] })}
-                      className="mt-2 text-white/25 hover:text-gold-400 text-xs tracking-wider transition-colors">
+                      className="mt-2 text-stone-400 hover:text-gold-400 text-xs tracking-wider transition-colors">
                       + Agregar característica
                     </button>
                   </FormField>
@@ -261,7 +261,7 @@ function AdminDashboard() {
                       <input type="checkbox" checked={formData.available}
                         onChange={e => setFormData({ ...formData, available: e.target.checked })}
                         className="w-4 h-4 accent-gold-500" />
-                      <span className="text-white/50 text-sm">Vehículo disponible</span>
+                      <span className="text-stone-500 text-sm">Vehículo disponible</span>
                     </label>
                   </FormField>
 
@@ -271,7 +271,7 @@ function AdminDashboard() {
                     </button>
                     {isEditing && (
                       <button type="button" onClick={resetForm}
-                        className="px-6 border border-white/10 text-white/30 hover:text-white/60 text-xs tracking-widest uppercase transition-colors">
+                        className="px-6 border border-stone-200 text-stone-400 hover:text-stone-700 text-xs tracking-widest uppercase transition-colors">
                         Cancelar
                       </button>
                     )}
@@ -282,13 +282,13 @@ function AdminDashboard() {
               {/* ── LISTA ── */}
               <div className="space-y-3 max-h-[800px] overflow-y-auto">
                 {vehicles.length === 0 && (
-                  <div className="bg-obsidian-800 border border-white/5 p-12 text-center">
-                    <p className="text-white/20 text-sm tracking-wider">No hay vehículos registrados</p>
+                  <div className="bg-white border border-stone-100 p-12 text-center">
+                    <p className="text-stone-300 text-sm tracking-wider">No hay vehículos registrados</p>
                   </div>
                 )}
                 {vehicles.map(v => (
                   <div key={v.id}
-                    className="bg-obsidian-800 border border-white/5 hover:border-gold-500/30 p-5 flex gap-4 transition-colors duration-300 group">
+                    className="bg-white border border-stone-100 hover:border-gold-500/30 p-5 flex gap-4 transition-colors duration-300 group">
                     <div className="relative w-28 h-20 flex-shrink-0 overflow-hidden">
                       <img src={v.image} alt={v.name}
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-filter duration-500"
@@ -298,13 +298,13 @@ function AdminDashboard() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h3 className="font-display text-lg font-semibold text-cream-200">{v.name}</h3>
-                          <p className="text-white/30 text-xs tracking-wider">{v.model}</p>
+                          <h3 className="font-display text-lg font-semibold text-stone-900">{v.name}</h3>
+                          <p className="text-stone-400 text-xs tracking-wider">{v.model}</p>
                         </div>
                         <span className={`text-[10px] tracking-widest uppercase px-2 py-1 border flex-shrink-0 ${
                           v.available
                             ? 'border-gold-500/30 text-gold-500/70'
-                            : 'border-white/10 text-white/20'
+                            : 'border-stone-200 text-stone-300'
                         }`}>
                           {v.available ? 'Disponible' : 'No disponible'}
                         </span>
@@ -312,11 +312,11 @@ function AdminDashboard() {
                       <p className="font-display text-xl font-bold text-gold-400 mt-2">{v.price}/día</p>
                       <div className="flex gap-2 mt-3">
                         <button onClick={() => handleEdit(v)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 border border-white/10 text-white/40 hover:border-gold-500/40 hover:text-gold-400 text-xs uppercase tracking-widest transition-all duration-200">
+                          className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 text-stone-500 hover:border-gold-500/40 hover:text-gold-400 text-xs uppercase tracking-widest transition-all duration-200">
                           <Pencil className="w-3 h-3" /> Editar
                         </button>
                         <button onClick={() => handleDelete(v.id, v.name)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 border border-white/10 text-white/30 hover:border-red-500/40 hover:text-red-400 text-xs uppercase tracking-widest transition-all duration-200">
+                          className="flex items-center gap-1.5 px-3 py-1.5 border border-stone-200 text-stone-400 hover:border-red-500/40 hover:text-red-400 text-xs uppercase tracking-widest transition-all duration-200">
                           <Trash2 className="w-3 h-3" /> Eliminar
                         </button>
                       </div>
@@ -338,7 +338,7 @@ function FormField({ label, children }) {
   return (
     <div>
       {label && (
-        <label className="block text-white/30 text-xs tracking-[0.2em] uppercase mb-2">{label}</label>
+        <label className="block text-stone-400 text-xs tracking-[0.2em] uppercase mb-2">{label}</label>
       )}
       {children}
     </div>
