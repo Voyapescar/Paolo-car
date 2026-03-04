@@ -7,7 +7,7 @@ import Hero from './components/Hero';
 import Fleet from './components/Fleet';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import WhatsAppButton from './components/WhatsAppButton';
+import WhatsAppBanner from './components/WhatsAppBanner';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -19,8 +19,8 @@ function HomePage() {
       <Hero />
       <Fleet />
       <Contact />
+      <WhatsAppBanner />
       <Footer />
-      <WhatsAppButton />
     </>
   );
 }

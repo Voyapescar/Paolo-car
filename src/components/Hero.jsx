@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Car, User, Phone as PhoneIcon, Mail, AlertCircle, ChevronDown } from 'lucide-react';
+import { Calendar, Car, User, Phone as PhoneIcon, Mail, AlertCircle, ChevronDown, Droplets, Clock, ParkingCircle, Hash } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { checkRateLimit, recordSubmission } from '../utils/rateLimiter';
 import { validateBookingForm, sanitizeText } from '../utils/validation';
@@ -16,6 +16,8 @@ function Hero() {
   const { config } = useConfig();
   const { vehicles } = useVehicles();
 
+  const [serviceType, setServiceType] = useState('rentacar'); // 'rentacar' | 'lavado' | 'estacionamiento'
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,7 +28,19 @@ function Hero() {
     returnDate: '',
     returnTime: '09:00',
     carType: '',
-    message: ''
+    message: '',
+    // Lavado
+    washDate: '',
+    washTime: '09:00',
+    washType: '',
+    vehicleDescription: '',
+    // Estacionamiento
+    parkingEntryDate: '',
+    parkingEntryTime: '09:00',
+    parkingExitDate: '',
+    parkingExitTime: '09:00',
+    parkingVehicle: '',
+    parkingPlate: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,12 +48,13 @@ function Hero() {
   const [touched, setTouched] = useState({});
   const [rentalDays, setRentalDays] = useState(0);
   const [priceData, setPriceData] = useState(null);
+  const [parkingHours, setParkingHours] = useState(0);
   const [rateLimitInfo, setRateLimitInfo] = useState(null);
   const [notification, setNotification] = useState({ show: false, type: 'success', title: '', message: '' });
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationData, setConfirmationData] = useState(null);
 
-  const cyclingServices = ['Rent a car', 'Parking', 'Car wash'];
+  const cyclingServices = ['Rent a car', 'Estacionamiento', 'Car wash' ,'Pintura y desabolladura' ];
   const [cyclingIndex, setCyclingIndex] = useState(0);
 
   useEffect(() => {
@@ -63,6 +78,24 @@ function Hero() {
       iva: `$${ivaNumber.toLocaleString('es-CL')}`, ivaNumber,
       total: `$${totalNumber.toLocaleString('es-CL')}`, totalNumber
     };
+  };
+
+  useEffect(() => {
+    if (formData.parkingEntryDate && formData.parkingExitDate) {
+      const entry = new Date(`${formData.parkingEntryDate}T${formData.parkingEntryTime}`);
+      const exit = new Date(`${formData.parkingExitDate}T${formData.parkingExitTime}`);
+      const hours = Math.ceil(Math.abs(exit - entry) / (1000 * 60 * 60)) || 1;
+      setParkingHours(hours);
+    } else {
+      setParkingHours(0);
+    }
+  }, [formData.parkingEntryDate, formData.parkingEntryTime, formData.parkingExitDate, formData.parkingExitTime]);
+
+  const formatParkingDuration = (hours) => {
+    if (hours < 24) return `${hours} ${hours === 1 ? 'hora' : 'horas'}`;
+    const days = Math.floor(hours / 24);
+    const rem = hours % 24;
+    return rem > 0 ? `${days} ${days === 1 ? 'día' : 'días'} y ${rem}h` : `${days} ${days === 1 ? 'día' : 'días'}`;
   };
 
   useEffect(() => {
@@ -101,8 +134,115 @@ function Hero() {
     else { const e2 = { ...errors }; delete e2[field]; setErrors(e2); }
   };
 
+  const validateWashForm = () => {
+    const errs = {};
+    if (!formData.name.trim() || formData.name.trim().split(/\s+/).length < 2) errs.name = 'Ingresa tu nombre completo';
+    if (!formData.phone.trim()) errs.phone = 'El teléfono es requerido';
+    if (!formData.washDate) errs.washDate = 'La fecha es requerida';
+    if (!formData.washType) errs.washType = 'Selecciona un tipo de lavado';
+    if (!formData.vehicleDescription.trim()) errs.vehicleDescription = 'Describe tu vehículo';
+    return { isValid: Object.keys(errs).length === 0, errors: errs };
+  };
+
+  const validateParkingForm = () => {
+    const errs = {};
+    if (!formData.name.trim() || formData.name.trim().split(/\s+/).length < 2) errs.name = 'Ingresa tu nombre completo';
+    if (!formData.phone.trim()) errs.phone = 'El teléfono es requerido';
+    if (!formData.parkingEntryDate) errs.parkingEntryDate = 'La fecha de ingreso es requerida';
+    if (!formData.parkingExitDate) errs.parkingExitDate = 'La fecha de salida es requerida';
+    if (!formData.parkingVehicle.trim()) errs.parkingVehicle = 'Describe tu vehículo';
+    return { isValid: Object.keys(errs).length === 0, errors: errs };
+  };
+
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
+
+    if (serviceType === 'estacionamiento') {
+      const v = validateParkingForm();
+      if (!v.isValid) {
+        setErrors(v.errors);
+        setTouched({ name: true, phone: true, parkingEntryDate: true, parkingExitDate: true, parkingVehicle: true });
+        setNotification({ show: true, type: 'warning', title: 'Faltan datos', message: 'Por favor completa los campos requeridos.' });
+        return;
+      }
+      const limitCheck = checkRateLimit();
+      if (!limitCheck.allowed) {
+        setNotification({ show: true, type: 'warning', title: 'Límite alcanzado', message: `Espera ${limitCheck.remainingTime} minutos.` });
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            from_name: sanitizeText(formData.name),
+            from_email: sanitizeText(formData.email),
+            phone: sanitizeText(formData.phone),
+            service_type: 'Estacionamiento',
+            wash_date: formData.parkingEntryDate,
+            wash_time: formData.parkingEntryTime,
+            wash_type: `Salida: ${formData.parkingExitDate} ${formData.parkingExitTime} (${formatParkingDuration(parkingHours)})`,
+            vehicle_description: `${sanitizeText(formData.parkingVehicle)}${formData.parkingPlate ? ` — Patente: ${sanitizeText(formData.parkingPlate)}` : ''}`,
+            message: sanitizeText(formData.message),
+            pickup_location: '', pickup_date: '', return_date: '', car_type: '',
+            rental_days: '', daily_price: '', subtotal: '', iva: '', total: ''
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        );
+        recordSubmission();
+        setNotification({ show: true, type: 'success', title: '¡Reserva de Estacionamiento Enviada!', message: 'Tu solicitud fue enviada. Te contactaremos para confirmar.' });
+        setFormData(p => ({ ...p, name: '', email: '', phone: '', parkingEntryDate: '', parkingEntryTime: '09:00', parkingExitDate: '', parkingExitTime: '09:00', parkingVehicle: '', parkingPlate: '', message: '' }));
+        setErrors({}); setTouched({});
+      } catch {
+        setNotification({ show: true, type: 'error', title: 'Error al enviar', message: 'Ocurrió un error. Intenta por WhatsApp.' });
+      } finally { setIsSubmitting(false); }
+      return;
+    }
+
+    if (serviceType === 'lavado') {
+      const v = validateWashForm();
+      if (!v.isValid) {
+        setErrors(v.errors);
+        setTouched({ name: true, phone: true, washDate: true, washType: true, vehicleDescription: true });
+        setNotification({ show: true, type: 'warning', title: 'Faltan datos', message: 'Por favor completa los campos requeridos.' });
+        return;
+      }
+      const limitCheck = checkRateLimit();
+      if (!limitCheck.allowed) {
+        setNotification({ show: true, type: 'warning', title: 'Límite alcanzado', message: `Espera ${limitCheck.remainingTime} minutos.` });
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            from_name: sanitizeText(formData.name),
+            from_email: sanitizeText(formData.email),
+            phone: sanitizeText(formData.phone),
+            service_type: 'Lavado',
+            wash_date: formData.washDate,
+            wash_time: formData.washTime,
+            wash_type: sanitizeText(formData.washType),
+            vehicle_description: sanitizeText(formData.vehicleDescription),
+            message: sanitizeText(formData.message),
+            pickup_location: '', pickup_date: '', return_date: '', car_type: '',
+            rental_days: '', daily_price: '', subtotal: '', iva: '', total: ''
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        );
+        recordSubmission();
+        setNotification({ show: true, type: 'success', title: '¡Lavado Agendado!', message: 'Tu solicitud fue enviada. Te contactaremos para confirmar.' });
+        setFormData(p => ({ ...p, name: '', email: '', phone: '', washDate: '', washTime: '09:00', washType: '', vehicleDescription: '', message: '' }));
+        setErrors({}); setTouched({});
+      } catch {
+        setNotification({ show: true, type: 'error', title: 'Error al enviar', message: 'Ocurrió un error. Intenta por WhatsApp.' });
+      } finally { setIsSubmitting(false); }
+      return;
+    }
+
     const validation = validateBookingForm(formData);
     if (!validation.isValid) {
       setErrors(validation.errors);
@@ -156,6 +296,50 @@ function Hero() {
 
   const handleWhatsAppSubmit = (e) => {
     e.preventDefault();
+    const phone = config.whatsappNumber || '56900000000';
+
+    if (serviceType === 'estacionamiento') {
+      const v = validateParkingForm();
+      if (!v.isValid) {
+        setErrors(v.errors);
+        setTouched({ name: true, phone: true, parkingEntryDate: true, parkingExitDate: true, parkingVehicle: true });
+        setNotification({ show: true, type: 'warning', title: 'Faltan datos', message: 'Por favor completa los campos requeridos.' });
+        return;
+      }
+      const msg = `¡Hola! Quiero reservar un estacionamiento:%0A%0A` +
+        `👤 Nombre: ${formData.name}%0A` +
+        `📱 Teléfono: ${formData.phone}%0A` +
+        (formData.email ? `📧 Email: ${formData.email}%0A` : '') +
+        `🅿️ Ingreso: ${formData.parkingEntryDate} a las ${formData.parkingEntryTime}%0A` +
+        `🏁 Salida: ${formData.parkingExitDate} a las ${formData.parkingExitTime}%0A` +
+        `⏱️ Duración: ${formatParkingDuration(parkingHours)}%0A` +
+        `🚗 Vehículo: ${formData.parkingVehicle}%0A` +
+        (formData.parkingPlate ? `🔢 Patente: ${formData.parkingPlate}%0A` : '') +
+        (formData.message ? `💬 Notas: ${formData.message}` : '');
+      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+      return;
+    }
+
+    if (serviceType === 'lavado') {
+      const v = validateWashForm();
+      if (!v.isValid) {
+        setErrors(v.errors);
+        setTouched({ name: true, phone: true, washDate: true, washType: true, vehicleDescription: true });
+        setNotification({ show: true, type: 'warning', title: 'Faltan datos', message: 'Por favor completa los campos requeridos.' });
+        return;
+      }
+      const msg = `¡Hola! Quiero agendar un lavado:%0A%0A` +
+        `👤 Nombre: ${formData.name}%0A` +
+        `📱 Teléfono: ${formData.phone}%0A` +
+        (formData.email ? `📧 Email: ${formData.email}%0A` : '') +
+        `📅 Fecha: ${formData.washDate} a las ${formData.washTime}%0A` +
+        `🚿 Tipo: ${formData.washType}%0A` +
+        `🚗 Vehículo: ${formData.vehicleDescription}%0A` +
+        (formData.message ? `💬 Notas: ${formData.message}` : '');
+      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+      return;
+    }
+
     const validation = validateBookingForm(formData);
     if (!validation.isValid) {
       setErrors(validation.errors);
@@ -168,7 +352,6 @@ function Hero() {
       `📍 Recogida: ${formData.pickupLocation}%0A` +
       `📅 ${formData.pickupDate} ${formData.pickupTime} → ${formData.returnDate} ${formData.returnTime}%0A` +
       `🚗 Vehículo: ${formData.carType}%0A⏰ ${rentalDays} día(s)%0A💬 ${formData.message}`;
-    const phone = config.whatsappNumber || '56900000000';
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
   };
 
@@ -217,7 +400,7 @@ function Hero() {
               transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-cream-200 leading-[0.9] mb-4"
             >
-              Servicios
+              Ofrecemos
             </motion.h1>
 
             <div
@@ -287,7 +470,7 @@ function Hero() {
             transition={{ duration: 0.7 }}
             className="mb-16"
           >
-            <p className="section-label mb-4">{config.bookingTitle || 'Reserva Tu Vehículo'}</p>
+            <p className="section-label mb-4">{config.bookingTitle || 'Agenda tu servicio'}</p>
             <div className="flex items-end gap-6">
               <h2 className="font-display text-4xl md:text-5xl font-bold text-cream-200">
                 Solicita tu <span className="italic text-gold-500">Reserva</span>
@@ -308,7 +491,50 @@ function Hero() {
             className="bg-obsidian-800 border border-white/5 p-8 md:p-12"
           >
             <form className="space-y-10">
-              {/* Fila 1: Datos personales */}
+
+              {/* ── TOGGLE DE SERVICIO ── */}
+              <div className="grid grid-cols-3 gap-2 p-1.5 bg-black/50 border border-white/15 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => { setServiceType('rentacar'); setErrors({}); setTouched({}); }}
+                  className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                    serviceType === 'rentacar'
+                      ? 'bg-gold-500 text-black'
+                      : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  <Car className="w-4 h-4 flex-shrink-0" />
+                  Rent a Car
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setServiceType('estacionamiento'); setErrors({}); setTouched({}); }}
+                  className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                    serviceType === 'estacionamiento'
+                      ? 'bg-gold-500 text-black'
+                      : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  <ParkingCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline">Estacionamiento</span>
+                  <span className="sm:hidden">Parking</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setServiceType('lavado'); setErrors({}); setTouched({}); }}
+                  className={`flex items-center justify-center gap-1.5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                    serviceType === 'lavado'
+                      ? 'bg-gold-500 text-black'
+                      : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  <Droplets className="w-4 h-4 flex-shrink-0" />
+                  Car Wash
+                </button>
+              </div>
+
+              {/* ── CAMPOS RENT A CAR ── */}
+              {serviceType === 'rentacar' && (<>
               <div>
                 <p className="section-label mb-6">Datos Personales</p>
                 <div className="grid md:grid-cols-3 gap-x-8 gap-y-8">
@@ -500,6 +726,189 @@ function Hero() {
                 />
               </div>
 
+              </>)} {/* fin rentacar */}
+
+              {/* ── CAMPOS CAR WASH ── */}
+              {serviceType === 'lavado' && (<>
+
+              {/* Datos personales wash */}
+              <div>
+                <p className="section-label mb-6">Datos Personales</p>
+                <div className="grid md:grid-cols-3 gap-x-8 gap-y-8">
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Nombre Completo *</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} onBlur={() => handleBlur('name')}
+                      placeholder="Juan Pérez González" className={inputBase('name')} />
+                    {touched.name && errors.name && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Teléfono *</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} onBlur={() => handleBlur('phone')}
+                      placeholder="+56 9 XXXX XXXX" className={inputBase('phone')} />
+                    {touched.phone && errors.phone && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.phone}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Email <span className="normal-case font-normal opacity-60">(opcional)</span></label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange}
+                      placeholder="correo@ejemplo.com" className={inputBase('email')} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/5" />
+
+              {/* Detalles del lavado */}
+              <div>
+                <p className="section-label mb-6">Detalles del Lavado</p>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
+                  {/* Tipo de lavado */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Tipo de Lavado *</label>
+                    <select name="washType" value={formData.washType} onChange={handleChange} onBlur={() => handleBlur('washType')}
+                      className={`${inputBase('washType')} bg-transparent`} style={{ colorScheme: 'dark' }}>
+                      <option value="" className="bg-obsidian-800">Seleccionar tipo</option>
+                      <option value="Lavado Básico" className="bg-obsidian-800">Lavado Básico — Exterior</option>
+                      <option value="Lavado Completo" className="bg-obsidian-800">Lavado Completo — Ext + Int</option>
+                      <option value="Lavado Premium" className="bg-obsidian-800">Lavado Premium — + Encerado</option>
+                      <option value="Detailing" className="bg-obsidian-800">Detailing — Profesional completo</option>
+                    </select>
+                    {touched.washType && errors.washType && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.washType}</p>}
+                  </div>
+                  {/* Vehículo */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Vehículo *</label>
+                    <input type="text" name="vehicleDescription" value={formData.vehicleDescription} onChange={handleChange} onBlur={() => handleBlur('vehicleDescription')}
+                      placeholder="Toyota Corolla Blanco 2022" className={inputBase('vehicleDescription')} />
+                    {touched.vehicleDescription && errors.vehicleDescription && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.vehicleDescription}</p>}
+                  </div>
+                  {/* Fecha */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Fecha *</label>
+                    <input type="date" name="washDate" value={formData.washDate} min={today} onChange={handleChange} onBlur={() => handleBlur('washDate')}
+                      className={`${inputBase('washDate')} text-sm`} style={{ colorScheme: 'dark' }} />
+                    {touched.washDate && errors.washDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.washDate}</p>}
+                  </div>
+                  {/* Hora */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Hora Preferida</label>
+                    <input type="time" name="washTime" value={formData.washTime} onChange={handleChange}
+                      className={`${inputBase('washTime')} text-sm`} style={{ colorScheme: 'dark' }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Mensaje wash */}
+              <div>
+                <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">
+                  Notas adicionales
+                </label>
+                <textarea name="message" value={formData.message} onChange={handleChange} rows={3}
+                  placeholder="¿Alguna solicitud especial?"
+                  className="w-full bg-transparent border-b border-white/20 focus:border-gold-500 pb-3 pt-2 text-cream-200 placeholder-white/30 focus:outline-none transition-colors duration-300 resize-none" />
+              </div>
+
+              </>)} {/* fin lavado */}
+
+              {/* ── CAMPOS ESTACIONAMIENTO ── */}
+              {serviceType === 'estacionamiento' && (<>
+
+              {/* Datos personales */}
+              <div>
+                <p className="section-label mb-6">Datos Personales</p>
+                <div className="grid md:grid-cols-3 gap-x-8 gap-y-8">
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Nombre Completo *</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} onBlur={() => handleBlur('name')}
+                      placeholder="Juan Pérez González" className={inputBase('name')} />
+                    {touched.name && errors.name && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Teléfono *</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} onBlur={() => handleBlur('phone')}
+                      placeholder="+56 9 XXXX XXXX" className={inputBase('phone')} />
+                    {touched.phone && errors.phone && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.phone}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Email <span className="normal-case font-normal opacity-60">(opcional)</span></label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange}
+                      placeholder="correo@ejemplo.com" className={inputBase('email')} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-white/5" />
+
+              {/* Detalles del estacionamiento */}
+              <div>
+                <p className="section-label mb-6">Detalles del Estacionamiento</p>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
+                  {/* Fecha ingreso */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Ingreso *</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="date" name="parkingEntryDate" value={formData.parkingEntryDate}
+                        min={today} onChange={handleChange} onBlur={() => handleBlur('parkingEntryDate')}
+                        className={`${inputBase('parkingEntryDate')} text-sm`} style={{ colorScheme: 'dark' }} />
+                      <input type="time" name="parkingEntryTime" value={formData.parkingEntryTime}
+                        onChange={handleChange}
+                        className={`${inputBase('parkingEntryTime')} text-sm`} style={{ colorScheme: 'dark' }} />
+                    </div>
+                    {touched.parkingEntryDate && errors.parkingEntryDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingEntryDate}</p>}
+                  </div>
+                  {/* Fecha salida */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Salida *</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="date" name="parkingExitDate" value={formData.parkingExitDate}
+                        min={formData.parkingEntryDate || today} onChange={handleChange} onBlur={() => handleBlur('parkingExitDate')}
+                        className={`${inputBase('parkingExitDate')} text-sm`} style={{ colorScheme: 'dark' }} />
+                      <input type="time" name="parkingExitTime" value={formData.parkingExitTime}
+                        onChange={handleChange}
+                        className={`${inputBase('parkingExitTime')} text-sm`} style={{ colorScheme: 'dark' }} />
+                    </div>
+                    {touched.parkingExitDate && errors.parkingExitDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingExitDate}</p>}
+                  </div>
+                  {/* Vehículo */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Vehículo *</label>
+                    <input type="text" name="parkingVehicle" value={formData.parkingVehicle} onChange={handleChange} onBlur={() => handleBlur('parkingVehicle')}
+                      placeholder="Toyota Corolla Blanco 2022" className={inputBase('parkingVehicle')} />
+                    {touched.parkingVehicle && errors.parkingVehicle && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingVehicle}</p>}
+                  </div>
+                  {/* Patente */}
+                  <div>
+                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Patente <span className="normal-case font-normal opacity-60">(opcional)</span></label>
+                    <input type="text" name="parkingPlate" value={formData.parkingPlate} onChange={handleChange}
+                      placeholder="ABCD12" className={inputBase('parkingPlate')} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Resumen duración */}
+              {parkingHours > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="border border-gold-500/20 bg-gold-500/5 p-6 flex items-center gap-4"
+                >
+                  <Clock className="w-5 h-5 text-gold-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-white/30 text-xs tracking-widest uppercase mb-1">Duración estimada</p>
+                    <p className="text-gold-400 font-display text-xl font-semibold">{formatParkingDuration(parkingHours)}</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Notas */}
+              <div>
+                <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Notas adicionales</label>
+                <textarea name="message" value={formData.message} onChange={handleChange} rows={3}
+                  placeholder="¿Alguna solicitud especial?"
+                  className="w-full bg-transparent border-b border-white/20 focus:border-gold-500 pb-3 pt-2 text-cream-200 placeholder-white/30 focus:outline-none transition-colors duration-300 resize-none" />
+              </div>
+
+              </>)} {/* fin estacionamiento */}
+
               {/* Botones */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button
@@ -508,7 +917,7 @@ function Hero() {
                   disabled={isSubmitting || (rateLimitInfo && !rateLimitInfo.allowed)}
                   className="btn-gold flex-1 justify-center py-4 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <span>{isSubmitting ? 'Enviando...' : 'Enviar Solicitud por Email'}</span>
+                  <span>{isSubmitting ? 'Enviando...' : (serviceType === 'lavado' ? 'Agendar Lavado por Email' : serviceType === 'estacionamiento' ? 'Reservar Estacionamiento por Email' : 'Enviar Solicitud por Email')}</span>
                 </button>
                 <button
                   type="button"
@@ -518,7 +927,7 @@ function Hero() {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                   </svg>
-                  <span>Enviar por WhatsApp</span>
+                  <span>{serviceType === 'lavado' ? 'Agendar por WhatsApp' : serviceType === 'estacionamiento' ? 'Reservar por WhatsApp' : 'Enviar por WhatsApp'}</span>
                 </button>
               </div>
             </form>
