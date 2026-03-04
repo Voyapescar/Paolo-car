@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useVehicles } from '../context/VehicleContext';
 import ConfigPanel from './ConfigPanel';
-import { LayoutGrid, Settings, LogOut, ExternalLink, Plus, Pencil, Trash2, X } from 'lucide-react';
+import { uploadImage } from '../utils/imageStorage';
+import { LayoutGrid, Settings, LogOut, ExternalLink, Plus, Pencil, Trash2, X, Upload, Loader2 } from 'lucide-react';
 
 function AdminDashboard() {
   const { logout } = useAuth();
@@ -13,7 +14,9 @@ function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('vehicles');
   const [isEditing, setIsEditing] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
-  const [showImageHelper, setShowImageHelper] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: '', model: '', price: '', image: '',
@@ -22,6 +25,22 @@ function AdminDashboard() {
   });
 
   const handleLogout = () => { logout(); navigate('/admin'); };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setIsUploading(true);
+    try {
+      const { url } = await uploadImage(file, 'fleet');
+      setFormData(prev => ({ ...prev, image: url }));
+    } catch (err) {
+      setUploadError(err.message || 'Error al subir la imagen');
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
 
   const handleEdit = (vehicle) => {
     setEditingVehicle(vehicle);
@@ -174,20 +193,39 @@ function AdminDashboard() {
                       placeholder="Ej: $35.000" required className={inputClass} />
                   </FormField>
 
-                  <FormField label="URL de Imagen" inputClass={inputClass}>
+                  <FormField label="Imagen">
                     {formData.image && (
                       <img src={formData.image} alt="preview"
                         className="w-full h-36 object-cover mb-3 grayscale"
                         onError={e => { e.target.src = 'https://via.placeholder.com/400x300?text=Sin+imagen'; }}
                       />
                     )}
+                    {/* Subida directa */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-full flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-gold-500/50 py-3 text-white/40 hover:text-gold-400 text-xs tracking-widest uppercase transition-all duration-200 disabled:opacity-50 disabled:cursor-wait mb-3"
+                    >
+                      {isUploading
+                        ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Subiendo...</>
+                        : <><Upload className="w-3.5 h-3.5" /> Subir imagen desde PC</>}
+                    </button>
+                    {uploadError && (
+                      <p className="text-red-400 text-xs mb-2">{uploadError}</p>
+                    )}
+                    {/* URL manual como fallback */}
                     <input type="url" value={formData.image}
                       onChange={e => setFormData({ ...formData, image: e.target.value })}
-                      placeholder="https://..." required className={inputClass} />
-                    <button type="button" onClick={() => setShowImageHelper(true)}
-                      className="mt-2 text-gold-500/60 hover:text-gold-400 text-xs tracking-wider transition-colors">
-                      ¿Cómo subir imágenes? →
-                    </button>
+                      placeholder="O pega una URL de imagen..."
+                      className={inputClass} />
                   </FormField>
 
                   <FormField label="Características">
@@ -291,28 +329,7 @@ function AdminDashboard() {
         </div>
       </main>
 
-      {/* Modal ayuda imágenes */}
-      {showImageHelper && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-          <div className="bg-obsidian-800 border border-white/10 max-w-lg w-full p-8">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-display text-xl font-semibold text-cream-200">Cómo subir imágenes</h3>
-              <button onClick={() => setShowImageHelper(false)} className="text-white/30 hover:text-white/60 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="space-y-4 text-white/50 text-sm leading-relaxed">
-              <p><span className="text-gold-400 font-medium">Opción 1 - Vercel Blob:</span> Ve a vercel.com/dashboard/stores → sube tu imagen → copia la URL pública.</p>
-              <p><span className="text-gold-400 font-medium">Opción 2 - Imgur:</span> Sube en imgur.com y copia el enlace directo (.jpg/.png).</p>
-              <p><span className="text-gold-400 font-medium">Opción 3 - Cloudinary:</span> Servicio profesional de imágenes gratuito.</p>
-              <p className="text-white/25 text-xs">La URL debe ser pública y terminar en .jpg, .png, .webp o .gif.</p>
-            </div>
-            <button onClick={() => setShowImageHelper(false)} className="btn-gold w-full justify-center py-3 mt-6">
-              <span>Entendido</span>
-            </button>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
