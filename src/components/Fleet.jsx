@@ -80,7 +80,7 @@ function Fleet() {
                   {!car.available && (
                     <div className="absolute top-5 left-5 flex items-center gap-2 bg-black/80 border border-gold-500/20 px-3 py-1.5 backdrop-blur-sm">
                       <Clock className="w-3 h-3 text-gold-500" />
-                      <span className="text-gold-500 text-[10px] tracking-[0.2em] uppercase font-medium">No disponible</span>
+                      <span className="text-gold-500 text-[10px] tracking-[0.2em] uppercase font-medium">Arrendado</span>
                     </div>
                   )}
                 </div>
@@ -136,7 +136,7 @@ function Fleet() {
                       </a>
                     ) : (
                       <span className="text-stone-600 text-[10px] tracking-[0.25em] uppercase border border-white/5 px-6 py-3 inline-block">
-                        Actualmente no disponible
+                        Arrendado
                       </span>
                     )}
                   </div>
