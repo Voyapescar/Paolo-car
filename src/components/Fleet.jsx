@@ -46,28 +46,20 @@ function Fleet() {
                 }`}
               >
                 {/* Imagen — alterna posición */}
-                <div className={`relative h-64 md:h-80 overflow-hidden ${isEven ? 'md:order-1' : 'md:order-2'}`}>
+                <div className={`relative h-[300px] md:h-[360px] overflow-hidden bg-stone-50 flex items-center justify-center ${isEven ? 'md:order-1' : 'md:order-2'}`}>
                   {car.image ? (
-                    <motion.img
+                    <img
                       src={car.image}
                       alt={car.name}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                      className="w-full h-full object-contain object-center p-6 transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                     />
                   ) : (
-                    <div className="w-full h-full bg-obsidian-800 flex items-center justify-center">
-                      <svg className="w-24 h-24 text-white/10" fill="currentColor" viewBox="0 0 24 24">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-24 h-24 text-stone-300" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                       </svg>
                     </div>
                   )}
-                  {/* Overlay de gradiente lateral */}
-                  <div
-                    className={`absolute inset-0 ${
-                      isEven
-                        ? 'bg-gradient-to-r from-transparent to-white/90'
-                        : 'bg-gradient-to-l from-transparent to-white/90'
-                    } opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                  />
                   {/* Badge no disponible */}
                   {!car.available && (
                     <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-white/95 border border-gold-500/30 px-3 py-1.5">

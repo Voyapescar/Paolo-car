@@ -7,26 +7,28 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Acento principal: naranja quemado (Hermès-like)
         gold: {
-          100: '#FEF3C7',
-          200: '#FDE68A',
-          300: '#FCD34D',
-          400: '#F59E0B',
-          500: '#D97706',
-          600: '#B45309',
-          700: '#92400E',
-          800: '#78350F',
-          900: '#451A03',
+          50:  '#FFF4EE',
+          100: '#FFE4CC',
+          200: '#FFC893',
+          300: '#FFA05A',
+          400: '#EA580C',
+          500: '#C2410C',
+          600: '#9A3412',
+          700: '#7C2D12',
+          800: '#5C1700',
+          900: '#3D0E00',
         },
         cream: {
           50:  '#FAFAF9',
           100: '#F5F5F4',
-          200: '#1C1917',
-          300: '#44403C',
+          200: '#0F0F0E',
+          300: '#3D3D3D',
         },
         obsidian: {
           800: '#FFFFFF',
-          900: '#F7F4EF',
+          900: '#F9F8F6',
         },
       },
       fontFamily: {
@@ -34,9 +36,10 @@ export default {
         display: ['Playfair Display', 'Georgia', 'serif'],
       },
       boxShadow: {
-        'gold': '0 0 30px rgba(217, 119, 6, 0.25)',
-        'gold-lg': '0 0 60px rgba(217, 119, 6, 0.35)',
-        'dark': '0 4px 32px rgba(0,0,0,0.10)',
+        'gold': '0 0 30px rgba(194, 65, 12, 0.15)',
+        'gold-lg': '0 0 60px rgba(194, 65, 12, 0.20)',
+        'dark': '0 4px 24px rgba(0,0,0,0.07)',
+        'card': '0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)',
       },
       animation: {
         'fade-up': 'fadeUp 0.8s ease-out both',

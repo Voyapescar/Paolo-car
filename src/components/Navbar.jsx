@@ -37,6 +37,14 @@ function Navbar() {
     { icon: Car, label: 'Rent a Car', description: 'Alquiler de vehículos' },
   ];
 
+  // Colores adaptativos: blanco sobre foto oscura, oscuro sobre fondo claro
+  const linkCls = scrolled
+    ? 'text-stone-500 hover:text-stone-900'
+    : 'text-white/80 hover:text-white';
+  const logoCls   = scrolled ? 'text-stone-900' : 'text-white';
+  const sublogoCls = scrolled ? 'text-gold-500' : 'text-white/60';
+  const mobileBtnCls = scrolled ? 'text-stone-700' : 'text-white';
+
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -44,7 +52,7 @@ function Navbar() {
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed w-full top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-obsidian-900/95 backdrop-blur-xl border-b border-stone-200 shadow-sm'
+          ? 'bg-white/95 backdrop-blur-xl border-b border-stone-200 shadow-sm'
           : 'bg-transparent'
       }`}
     >
@@ -52,10 +60,10 @@ function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <a href="/" className="flex flex-col leading-none group">
-            <span className="font-display text-2xl font-bold text-stone-900 tracking-wide group-hover:text-gold-500 transition-colors duration-300">
+            <span className={`font-display text-2xl font-bold tracking-wide transition-colors duration-300 group-hover:text-gold-500 ${logoCls}`}>
               PAOLO
             </span>
-            <span className="text-[10px] tracking-[0.35em] text-gold-500 uppercase font-medium">
+            <span className={`text-[10px] tracking-[0.35em] uppercase font-medium transition-colors duration-300 ${sublogoCls}`}>
               Rent a Car
             </span>
           </a>
@@ -69,7 +77,7 @@ function Navbar() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.08 }}
-                className="relative text-sm tracking-[0.1em] text-stone-500 hover:text-stone-900 transition-colors duration-300 uppercase font-medium group py-1"
+                className={`relative text-sm tracking-[0.1em] transition-colors duration-300 uppercase font-medium group py-1 ${linkCls}`}
               >
                 {item.label}
                 <span className="absolute bottom-0 left-0 w-0 h-px bg-gold-500 group-hover:w-full transition-all duration-400" />
@@ -83,7 +91,7 @@ function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.34 }}
                 onClick={() => setServicesOpen(!servicesOpen)}
-                className="relative flex items-center gap-1 text-sm tracking-[0.1em] text-stone-500 hover:text-stone-900 transition-colors duration-300 uppercase font-medium group py-1"
+                className={`relative flex items-center gap-1 text-sm tracking-[0.1em] transition-colors duration-300 uppercase font-medium group py-1 ${linkCls}`}
               >
                 Servicios
                 <ChevronDown
@@ -99,7 +107,7 @@ function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.97 }}
                     transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-white border border-stone-200 rounded-xl shadow-lg overflow-hidden"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-white border border-stone-200 shadow-xl overflow-hidden"
                   >
                     {services.map(({ icon: Icon, label, description }) => (
                       <button
@@ -107,11 +115,11 @@ function Navbar() {
                         onClick={() => setServicesOpen(false)}
                         className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-stone-50 transition-colors duration-200 group/item border-b border-stone-100 last:border-0"
                       >
-                        <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-gold-500/10 flex items-center justify-center group-hover/item:bg-gold-500/20 transition-colors duration-200">
-                          <Icon className="w-4 h-4 text-gold-400" />
+                        <span className="flex-shrink-0 w-8 h-8 bg-stone-100 flex items-center justify-center group-hover/item:bg-gold-500/10 transition-colors duration-200">
+                          <Icon className="w-4 h-4 text-gold-500" />
                         </span>
                         <span className="flex flex-col">
-                          <span className="text-xs font-semibold text-cream-200 tracking-wide uppercase">{label}</span>
+                          <span className="text-xs font-semibold text-stone-800 tracking-wide uppercase">{label}</span>
                           <span className="text-[10px] text-stone-400">{description}</span>
                         </span>
                       </button>
@@ -126,7 +134,7 @@ function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="btn-gold"
+              className={scrolled ? 'btn-gold' : 'relative inline-flex items-center justify-center gap-2 px-8 py-3 border border-white text-white text-xs tracking-[0.2em] uppercase font-medium hover:bg-white hover:text-stone-900 transition-colors duration-300'}
             >
               <span>Reservar Ahora</span>
             </motion.a>
@@ -135,7 +143,7 @@ function Navbar() {
           {/* Mobile toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-cream-200 p-2"
+            className={`md:hidden p-2 transition-colors ${mobileBtnCls}`}
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

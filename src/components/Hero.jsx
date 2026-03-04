@@ -816,19 +816,19 @@ function Hero() {
                 <p className="section-label mb-6">Datos Personales</p>
                 <div className="grid md:grid-cols-3 gap-x-8 gap-y-8">
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Nombre Completo *</label>
+                    <label className="block text-stone-500 text-xs tracking-[0.15em] uppercase mb-3">Nombre Completo *</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} onBlur={() => handleBlur('name')}
                       placeholder="Juan Pérez González" className={inputBase('name')} />
                     {touched.name && errors.name && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Teléfono *</label>
+                    <label className="block text-stone-500 text-xs tracking-[0.15em] uppercase mb-3">Teléfono *</label>
                     <input type="tel" name="phone" value={formData.phone} onChange={handleChange} onBlur={() => handleBlur('phone')}
                       placeholder="+56 9 XXXX XXXX" className={inputBase('phone')} />
                     {touched.phone && errors.phone && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.phone}</p>}
                   </div>
                   <div>
-                    <label className="block text-white/40 text-xs tracking-[0.15em] uppercase mb-3">Email <span className="normal-case font-normal opacity-60">(opcional)</span></label>
+                    <label className="block text-stone-500 text-xs tracking-[0.15em] uppercase mb-3">Email <span className="normal-case font-normal opacity-60">(opcional)</span></label>
                     <input type="email" name="email" value={formData.email} onChange={handleChange}
                       placeholder="correo@ejemplo.com" className={inputBase('email')} />
                   </div>
