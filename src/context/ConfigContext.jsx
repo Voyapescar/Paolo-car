@@ -26,12 +26,12 @@ const defaultConfig = {
 
   // Footer
   footerDescription: 'Servicio de arriendo de vehículos premium en Iquique, Chile.',
-  footerPhone: '+56 9 XXXX XXXX',
-  footerEmail: 'contacto@paolorentacar.cl',
+  footerPhone: '+56 9 9394 4317',
+  footerEmail: 'contacto@paolocar.cl',
   footerAddress: 'Iquique, Chile',
 
   // Contact
-  whatsappNumber: '56900000000',
+  whatsappNumber: '56993944317',
   whatsappMessage: 'Hola, me gustaría información sobre el arriendo de vehículos Paolo Rent a Car',
 };
 
