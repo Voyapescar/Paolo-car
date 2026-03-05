@@ -91,7 +91,7 @@ function Fleet() {
                   {/* Nombre y modelo */}
                   <div>
                     <div className="mb-6">
-                      <h3 className="font-display text-3xl md:text-5xl font-bold text-white leading-tight tracking-wide">
+                      <h3 className="font-display text-3xl md:text-5xl font-bold text-gold-400 leading-tight tracking-wide">
                         {car.name}
                       </h3>
                       <p className="text-stone-500 text-xs tracking-[0.3em] uppercase mt-2 font-medium">
@@ -101,13 +101,13 @@ function Fleet() {
 
                     {/* Precio */}
                     <div className="flex items-end gap-3 mb-2">
-                      <span className="font-display text-4xl md:text-5xl font-bold text-gold-500 leading-none">
+                      <span className="font-display text-4xl md:text-5xl font-bold text-white leading-none">
                         {car.price}
                       </span>
                       <span className="text-stone-500 text-sm mb-1">/día</span>
                     </div>
                     <p className="text-stone-600 text-[10px] tracking-[0.25em] uppercase mb-10">
-                      Periodo de 24 horas · IVA incluido
+                      Periodo de 24 horas · Sin IVA
                     </p>
 
                     {/* Divisor */}

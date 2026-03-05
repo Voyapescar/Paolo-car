@@ -107,43 +107,41 @@ export const validateDates = (pickupDate, returnDate) => {
   if (!pickupDate) {
     return { isValid: false, error: 'La fecha de recogida es requerida' };
   }
-  
+
   if (!returnDate) {
     return { isValid: false, error: 'La fecha de devolución es requerida' };
   }
-  
-  const pickup = new Date(pickupDate);
-  const returnD = new Date(returnDate);
+
+  // Parsear como fecha local (no UTC) para evitar problemas de zona horaria
+  const parseLocal = (str) => {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
+  const pickup = parseLocal(pickupDate);
+  const returnD = parseLocal(returnDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
-  // Verificar que la fecha de recogida no sea en el pasado
+
   if (pickup < today) {
     return { isValid: false, error: 'La fecha de recogida no puede ser en el pasado' };
   }
-  
-  // Verificar que la fecha de devolución sea igual o posterior a la de recogida
-  // (Permitir mismo día ya que tenemos horarios de 24 horas)
+
   if (returnD < pickup) {
     return { isValid: false, error: 'La fecha de devolución no puede ser anterior a la de recogida' };
   }
-  
-  // Verificar que el periodo no sea mayor a 30 días
-  const diffTime = Math.abs(returnD - pickup);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+
+  const diffDays = Math.ceil(Math.abs(returnD - pickup) / (1000 * 60 * 60 * 24));
   if (diffDays > 30) {
     return { isValid: false, error: 'El periodo de arriendo no puede superar 30 días. Contáctanos para reservas más largas.' };
   }
-  
-  // Verificar que la reserva no sea muy lejana (más de 6 meses)
+
   const maxDate = new Date();
   maxDate.setMonth(maxDate.getMonth() + 6);
-  
   if (pickup > maxDate) {
     return { isValid: false, error: 'No se pueden hacer reservas con más de 6 meses de anticipación' };
   }
-  
+
   return { isValid: true, error: '' };
 };
 

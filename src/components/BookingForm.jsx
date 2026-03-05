@@ -56,13 +56,9 @@ function BookingForm() {
     if (!selectedVehicle) return null;
     const priceString = selectedVehicle.price.replace(/[$.]/g, '');
     const dailyPriceNumber = parseInt(priceString);
-    const subtotalNumber = dailyPriceNumber * days;
-    const ivaNumber = Math.round(subtotalNumber * 0.19);
-    const totalNumber = subtotalNumber + ivaNumber;
+    const totalNumber = dailyPriceNumber * days;
     return {
       dailyPrice: selectedVehicle.price, dailyPriceNumber, days,
-      subtotal: `$${subtotalNumber.toLocaleString('es-CL')}`, subtotalNumber,
-      iva: `$${ivaNumber.toLocaleString('es-CL')}`, ivaNumber,
       total: `$${totalNumber.toLocaleString('es-CL')}`, totalNumber
     };
   };
@@ -102,11 +98,15 @@ function BookingForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'pickupTime') {
-      setFormData({ ...formData, [name]: value, returnTime: value });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData(prev => {
+      const next = { ...prev, [name]: name === 'parkingPlate' ? value.toUpperCase().replace(/[^A-Z0-9]/g, '') : value };
+      if (name === 'pickupTime') next.returnTime = value;
+      // Auto-limpiar fecha de devolución si queda antes de la nueva fecha de recogida
+      if (name === 'pickupDate' && prev.returnDate && prev.returnDate < value) next.returnDate = '';
+      // Auto-limpiar fecha de salida de parking si queda antes del nuevo ingreso
+      if (name === 'parkingEntryDate' && prev.parkingExitDate && prev.parkingExitDate < value) next.parkingExitDate = '';
+      return next;
+    });
     if ((name === 'pickupDate' || name === 'returnDate') && errors.dates) {
       const e2 = { ...errors }; delete e2.dates; setErrors(e2);
     } else if (errors[name]) {
@@ -276,8 +276,9 @@ function BookingForm() {
       message: sanitizeText(formData.message),
       rental_days: rentalDays,
       daily_price: priceData?.dailyPrice ?? 'N/A',
-      subtotal: priceData?.subtotal ?? 'N/A',
-      iva: priceData?.iva ?? 'N/A',
+      rental_days_total: priceData ? `${priceData.days} día${priceData.days === 1 ? '' : 's'} × ${priceData.dailyPrice}` : 'N/A',
+      subtotal: priceData?.total ?? 'N/A',
+      iva: 'Sin IVA (precio neto)',
       total: priceData?.total ?? 'N/A'
     };
     try {
@@ -499,7 +500,7 @@ function BookingForm() {
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}>
                 <label className="flex items-center gap-2 text-stone-500 text-sm font-semibold mb-2">
                   <Mail className="w-4 h-4 text-gold-500" />
-                  Email <span className="text-gold-500">*</span>
+                  Email {serviceType === 'rentacar' ? <span className="text-gold-500">*</span> : <span className="text-stone-400 font-normal">(Opcional)</span>}
                 </label>
                 <input
                   type="email" name="email" value={formData.email}
@@ -635,23 +636,12 @@ function BookingForm() {
                   </p>
                 </div>
                 {priceData && (
-                  <div className="bg-stone-50 rounded-xl p-3 space-y-1.5">
+                  <div className="bg-stone-50 rounded-xl p-3 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-stone-400">Precio/día</span>
-                      <span className="text-stone-900 font-medium">{priceData.dailyPrice}</span>
+                      <span className="text-stone-400">{priceData.days} {priceData.days === 1 ? 'día' : 'días'} × {priceData.dailyPrice}/día</span>
+                      <span className="font-bold text-gold-500 text-base">{priceData.total}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-stone-400">Subtotal</span>
-                      <span className="text-stone-900 font-medium">{priceData.subtotal}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-stone-400">IVA (19%)</span>
-                      <span className="text-stone-900 font-medium">{priceData.iva}</span>
-                    </div>
-                    <div className="flex justify-between text-base border-t border-stone-200 pt-2">
-                      <span className="font-bold text-gold-400">Total</span>
-                      <span className="font-bold text-gold-400 text-lg">{priceData.total}</span>
-                    </div>
+                    <p className="text-[10px] text-stone-400 tracking-wide uppercase">Precio neto · IVA se aplica al facturar</p>
                   </div>
                 )}
               </motion.div>
@@ -883,7 +873,8 @@ function BookingForm() {
                   type="text" name="parkingPlate" value={formData.parkingPlate}
                   onChange={handleChange}
                   placeholder="Ej: ABCD12"
-                  className={inputCls('parkingPlate')}
+                  maxLength={6}
+                  className={`${inputCls('parkingPlate')} uppercase tracking-widest font-mono`}
                 />
               </motion.div>
             </div>
