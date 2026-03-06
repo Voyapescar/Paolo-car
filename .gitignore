@@ -44,3 +44,6 @@ vite.config.js.timestamp-*
 .parcel-cache/
 .eslintcache
 *.tsbuildinfo
+
+# Supabase CLI temp files (contain project metadata, never commit)
+supabase/.temp/

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, MessageCircle, Calendar, Car, User, Phone as PhoneIcon, AlertCircle, Clock, MapPin, Droplets, ParkingCircle, Hash } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { Mail, MessageCircle, Calendar, Car, User, Phone as PhoneIcon, AlertCircle, Clock, MapPin, Droplets, ParkingCircle, Hash, ChevronDown } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { checkRateLimit, recordSubmission } from '../utils/rateLimiter';
 import { validateBookingForm, sanitizeText } from '../utils/validation';
 import { useConfig } from '../context/ConfigContext';
 import { useVehicles } from '../context/VehicleContext';
 import Notification from './Notification';
 import BookingConfirmationModal from './BookingConfirmationModal';
+import DateInput from './DateInput';
+import TimeInput from './TimeInput';
 
 function BookingForm() {
   const { config } = useConfig();
@@ -129,25 +131,45 @@ function BookingForm() {
     }
   };
 
+  const ALLOWED_WASH_TYPES = ['Lavado Interior y Exterior', 'Lavado de Tapiz', 'Lavado de Motor', 'Lavado 360°', 'Lavado Bajada de Faena'];
+
   // Validación para el formulario de estacionamiento
   const validateParkingForm = () => {
     const errs = {};
+    const cleanPhone = formData.phone.replace(/[^\d]/g, '');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const entryD = formData.parkingEntryDate ? new Date(formData.parkingEntryDate + 'T00:00:00') : null;
+    const exitD = formData.parkingExitDate ? new Date(formData.parkingExitDate + 'T00:00:00') : null;
     if (!formData.name.trim() || formData.name.trim().split(/\s+/).length < 2) errs.name = 'Ingresa tu nombre completo';
+    if (formData.name.trim().length > 100) errs.name = 'Nombre demasiado largo';
     if (!formData.phone.trim()) errs.phone = 'El teléfono es requerido';
+    else if (cleanPhone.length < 8 || cleanPhone.length > 12) errs.phone = 'Número de teléfono inválido';
     if (!formData.parkingEntryDate) errs.parkingEntryDate = 'La fecha de ingreso es requerida';
+    else if (entryD < today) errs.parkingEntryDate = 'La fecha de ingreso no puede ser en el pasado';
     if (!formData.parkingExitDate) errs.parkingExitDate = 'La fecha de salida es requerida';
+    else if (entryD && exitD && exitD < entryD) errs.parkingExitDate = 'La salida debe ser posterior al ingreso';
     if (!formData.parkingVehicle.trim()) errs.parkingVehicle = 'Describe tu vehículo';
+    else if (formData.parkingVehicle.trim().length > 200) errs.parkingVehicle = 'Descripción demasiado larga';
+    if (formData.parkingPlate && !/^[A-Z0-9]{2,7}$/.test(formData.parkingPlate)) errs.parkingPlate = 'Patente inválida';
     return { isValid: Object.keys(errs).length === 0, errors: errs };
   };
 
-  // Validación simple para el formulario de lavado
+  // Validación para el formulario de lavado
   const validateWashForm = () => {
     const errs = {};
+    const cleanPhone = formData.phone.replace(/[^\d]/g, '');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const washD = formData.washDate ? new Date(formData.washDate + 'T00:00:00') : null;
     if (!formData.name.trim() || formData.name.trim().split(/\s+/).length < 2) errs.name = 'Ingresa tu nombre completo';
+    if (formData.name.trim().length > 100) errs.name = 'Nombre demasiado largo';
     if (!formData.phone.trim()) errs.phone = 'El teléfono es requerido';
+    else if (cleanPhone.length < 8 || cleanPhone.length > 12) errs.phone = 'Número de teléfono inválido';
     if (!formData.washDate) errs.washDate = 'La fecha es requerida';
+    else if (washD < today) errs.washDate = 'La fecha no puede ser en el pasado';
     if (!formData.washType) errs.washType = 'Selecciona un tipo de lavado';
+    else if (!ALLOWED_WASH_TYPES.includes(formData.washType)) errs.washType = 'Tipo de lavado no válido';
     if (!formData.vehicleDescription.trim()) errs.vehicleDescription = 'Describe tu vehículo';
+    else if (formData.vehicleDescription.trim().length > 200) errs.vehicleDescription = 'Descripción demasiado larga';
     return { isValid: Object.keys(errs).length === 0, errors: errs };
   };
 
@@ -169,10 +191,7 @@ function BookingForm() {
         return;
       }
       setIsSubmitting(true);
-      const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-      const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-      const templateParams = {
+      const parkingParams = {
         from_name: sanitizeText(formData.name),
         from_email: sanitizeText(formData.email),
         phone: sanitizeText(formData.phone),
@@ -182,11 +201,10 @@ function BookingForm() {
         wash_type: `Hasta: ${formData.parkingExitDate} ${formData.parkingExitTime} (${formatParkingDuration(parkingHours)})`,
         vehicle_description: `${sanitizeText(formData.parkingVehicle)}${formData.parkingPlate ? ` — Patente: ${sanitizeText(formData.parkingPlate)}` : ''}`,
         message: sanitizeText(formData.message),
-        pickup_location: '', pickup_date: '', return_date: '', car_type: '',
-        rental_days: '', daily_price: '', subtotal: '', iva: '', total: ''
       };
       try {
-        await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+        const { error } = await supabase.functions.invoke('send-email', { body: parkingParams });
+        if (error) throw error;
         recordSubmission();
         setNotification({ show: true, type: 'success', title: '¡Reserva de Estacionamiento Enviada!', message: 'Tu solicitud fue enviada. Te contactaremos para confirmar.' });
         setFormData(prev => ({ ...prev, name: '', email: '', phone: '', parkingEntryDate: '', parkingEntryTime: '09:00', parkingExitDate: '', parkingExitTime: '09:00', parkingVehicle: '', parkingPlate: '', message: '' }));
@@ -214,10 +232,7 @@ function BookingForm() {
         return;
       }
       setIsSubmitting(true);
-      const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-      const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-      const templateParams = {
+      const washParams = {
         from_name: sanitizeText(formData.name),
         from_email: sanitizeText(formData.email),
         phone: sanitizeText(formData.phone),
@@ -227,12 +242,10 @@ function BookingForm() {
         wash_type: sanitizeText(formData.washType),
         vehicle_description: sanitizeText(formData.vehicleDescription),
         message: sanitizeText(formData.message),
-        // Campos de rent-a-car vacíos para compatibilidad de plantilla
-        pickup_location: '', pickup_date: '', return_date: '', car_type: '',
-        rental_days: '', daily_price: '', subtotal: '', iva: '', total: ''
       };
       try {
-        await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+        const { error } = await supabase.functions.invoke('send-email', { body: washParams });
+        if (error) throw error;
         recordSubmission();
         setNotification({ show: true, type: 'success', title: '¡Lavado Agendado!', message: 'Tu solicitud fue enviada. Te contactaremos para confirmar.' });
         setFormData(prev => ({ ...prev, name: '', email: '', phone: '', washDate: '', washTime: '09:00', washType: '', vehicleDescription: '', message: '' }));
@@ -259,14 +272,11 @@ function BookingForm() {
       return;
     }
     setIsSubmitting(true);
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const CLIENT_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_CLIENT_TEMPLATE_ID;
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    const templateParams = {
+    const rentalParams = {
       from_name: sanitizeText(formData.name),
       from_email: sanitizeText(formData.email),
       phone: sanitizeText(formData.phone),
+      service_type: 'Arriendo',
       pickup_location: sanitizeText(formData.pickupLocation),
       pickup_date: formData.pickupDate,
       pickup_time: formData.pickupTime,
@@ -276,17 +286,11 @@ function BookingForm() {
       message: sanitizeText(formData.message),
       rental_days: rentalDays,
       daily_price: priceData?.dailyPrice ?? 'N/A',
-      rental_days_total: priceData ? `${priceData.days} día${priceData.days === 1 ? '' : 's'} × ${priceData.dailyPrice}` : 'N/A',
-      subtotal: priceData?.total ?? 'N/A',
-      iva: 'Sin IVA (precio neto)',
       total: priceData?.total ?? 'N/A'
     };
     try {
-      await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
-      if (CLIENT_TEMPLATE_ID) {
-        try { await emailjs.send(SERVICE_ID, CLIENT_TEMPLATE_ID, templateParams, PUBLIC_KEY); }
-        catch (err) { console.error('Error correo cliente:', err); }
-      }
+      const { error } = await supabase.functions.invoke('send-email', { body: rentalParams });
+      if (error) throw error;
       recordSubmission();
       const newLimit = checkRateLimit();
       setRateLimitInfo(newLimit.allowed ? null : newLimit);
@@ -296,8 +300,8 @@ function BookingForm() {
       setFormData({ name: '', email: '', phone: '', pickupLocation: 'Iquique', pickupDate: '', pickupTime: '09:00', returnDate: '', returnTime: '09:00', carType: '', message: '', washDate: '', washTime: '09:00', washType: '', vehicleDescription: '', parkingEntryDate: '', parkingEntryTime: '09:00', parkingExitDate: '', parkingExitTime: '09:00', parkingVehicle: '', parkingPlate: '' });
       setErrors({}); setTouched({});
     } catch (error) {
-      console.error('Error EmailJS:', error);
-      setNotification({ show: true, type: 'error', title: 'Error al enviar', message: `${error.text || 'Ocurrió un error'}. Por favor, intenta por WhatsApp.` });
+      console.error('Error send-email:', error);
+      setNotification({ show: true, type: 'error', title: 'Error al enviar', message: 'Ocurrió un error. Por favor, intenta por WhatsApp.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -376,6 +380,15 @@ function BookingForm() {
         ? 'border-red-500 focus:border-red-400'
         : 'border-stone-200 focus:border-gold-500 hover:border-stone-300'
     } focus:ring-4 focus:ring-gold-500/10`;
+
+  const getMinTime = (dateStr) => {
+    const today = new Date().toISOString().split('T')[0];
+    if (dateStr === today) {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+    return '';
+  };
 
   return (
     <section id="reserva" className="bg-obsidian-900 py-24 relative overflow-hidden">
@@ -544,16 +557,19 @@ function BookingForm() {
                 <MapPin className="w-4 h-4 text-gold-500" />
                 Lugar de Recogida <span className="text-gold-500">*</span>
               </label>
-              <select
-                name="pickupLocation"
-                value={formData.pickupLocation}
-                onChange={handleChange}
-                className={`${inputCls('pickupLocation')} bg-white`}
-                style={{ colorScheme: 'light' }}
-              >
-                <option value="Iquique">Iquique</option>
-                <option value="Aeropuerto Iquique">Aeropuerto Iquique</option>
-              </select>
+              <div className="relative">
+                <select
+                  name="pickupLocation"
+                  value={formData.pickupLocation}
+                  onChange={handleChange}
+                  className={`${inputCls('pickupLocation')} bg-white appearance-none pr-10 cursor-pointer`}
+                  style={{ colorScheme: 'light' }}
+                >
+                  <option value="Iquique">Iquique</option>
+                  <option value="Aeropuerto Iquique">Aeropuerto Iquique</option>
+                </select>
+                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+              </div>
             </motion.div>
 
             {/* Fechas y Horas */}
@@ -563,24 +579,25 @@ function BookingForm() {
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Recogida <span className="text-gold-500">*</span>
                 </label>
-                <input
-                  type="date" name="pickupDate" value={formData.pickupDate}
-                  min={new Date().toISOString().split('T')[0]}
+                <DateInput
+                  name="pickupDate"
+                  value={formData.pickupDate}
                   onChange={handleChange}
                   onBlur={() => { if (formData.pickupDate && formData.returnDate) handleBlur('dates'); }}
-                  className={`${inputCls('dates')} text-sm`}
-                  style={{ colorScheme: 'light' }}
+                  minDate={new Date()}
+                  className={`${inputCls('dates')} text-sm pr-10`}
                 />
                 <div>
                   <label className="flex items-center gap-2 text-stone-400 text-xs font-medium mb-2">
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Recogida
                   </label>
-                  <input
-                    type="time" name="pickupTime" value={formData.pickupTime}
+                  <TimeInput
+                    name="pickupTime"
+                    value={formData.pickupTime}
                     onChange={handleChange}
-                    className={`${inputCls('pickupTime')} text-sm`}
-                    style={{ colorScheme: 'light' }}
+                    minTime={getMinTime(formData.pickupDate)}
+                    className={`${inputCls('pickupTime')} text-sm pr-10`}
                   />
                 </div>
               </motion.div>
@@ -590,13 +607,13 @@ function BookingForm() {
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Devolución <span className="text-gold-500">*</span>
                 </label>
-                <input
-                  type="date" name="returnDate" value={formData.returnDate}
-                  min={formData.pickupDate || new Date().toISOString().split('T')[0]}
+                <DateInput
+                  name="returnDate"
+                  value={formData.returnDate}
                   onChange={handleChange}
                   onBlur={() => { if (formData.pickupDate && formData.returnDate) handleBlur('dates'); }}
-                  className={`${inputCls('dates')} text-sm`}
-                  style={{ colorScheme: 'light' }}
+                  minDate={formData.pickupDate ? new Date(formData.pickupDate + 'T00:00:00') : new Date()}
+                  className={`${inputCls('dates')} text-sm pr-10`}
                 />
                 <div>
                   <label className="flex items-center gap-2 text-stone-400 text-xs font-medium mb-2">
@@ -653,20 +670,23 @@ function BookingForm() {
                 <Car className="w-4 h-4 text-gold-500" />
                 Tipo de Vehículo <span className="text-gold-500">*</span>
               </label>
-              <select
-                name="carType" value={formData.carType}
-                onChange={handleChange} onBlur={() => handleBlur('carType')}
-                disabled={vehiclesLoading}
-                className={`${inputCls('carType')} bg-white ${vehiclesLoading ? 'cursor-wait opacity-60' : ''}`}
-                style={{ colorScheme: 'light' }}
-              >
-                <option value="">{vehiclesLoading ? 'Cargando vehículos...' : 'Selecciona un vehículo'}</option>
-                {!vehiclesLoading && vehicles.filter(v => v.available !== false).map((v) => (
-                  <option key={v.id} value={v.name}>
-                    {v.name} — {v.model} ({v.price}/día)
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  name="carType" value={formData.carType}
+                  onChange={handleChange} onBlur={() => handleBlur('carType')}
+                  disabled={vehiclesLoading}
+                  className={`${inputCls('carType')} bg-white appearance-none pr-10 cursor-pointer ${vehiclesLoading ? 'cursor-wait opacity-60' : ''}`}
+                  style={{ colorScheme: 'light' }}
+                >
+                  <option value="">{vehiclesLoading ? 'Cargando vehículos...' : 'Selecciona un vehículo'}</option>
+                  {!vehiclesLoading && vehicles.filter(v => v.available !== false).map((v) => (
+                    <option key={v.id} value={v.name}>
+                      {v.name} — {v.model} ({v.price}/día)
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+              </div>
               {touched.carType && errors.carType && (
                 <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" /> {errors.carType}
@@ -685,18 +705,22 @@ function BookingForm() {
                 <Droplets className="w-4 h-4 text-gold-500" />
                 Tipo de Lavado <span className="text-gold-500">*</span>
               </label>
-              <select
-                name="washType" value={formData.washType}
-                onChange={handleChange} onBlur={() => handleBlur('washType')}
-                className={`${inputCls('washType')} bg-white`}
-                style={{ colorScheme: 'light' }}
-              >
-                <option value="">Selecciona un tipo de lavado</option>
-                <option value="Lavado Básico">Lavado Básico — Exterior</option>
-                <option value="Lavado Completo">Lavado Completo — Exterior + Interior</option>
-                <option value="Lavado Premium">Lavado Premium — Completo + Encerado</option>
-                <option value="Detailing">Detailing — Tratamiento completo profesional</option>
-              </select>
+              <div className="relative">
+                <select
+                  name="washType" value={formData.washType}
+                  onChange={handleChange} onBlur={() => handleBlur('washType')}
+                  className={`${inputCls('washType')} bg-white appearance-none pr-10 cursor-pointer`}
+                  style={{ colorScheme: 'light' }}
+                >
+                  <option value="">Selecciona un tipo de lavado</option>
+                  <option value="Lavado Interior y Exterior">Lavado Interior y Exterior</option>
+                  <option value="Lavado de Tapiz">Lavado de Tapiz</option>
+                  <option value="Lavado de Motor">Lavado de Motor</option>
+                  <option value="Lavado 360°">Lavado 360°</option>
+                  <option value="Lavado Bajada de Faena">Lavado Bajada de Faena</option>
+                </select>
+                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+              </div>
               {touched.washType && errors.washType && (
                 <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" /> {errors.washType}
@@ -730,12 +754,13 @@ function BookingForm() {
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha del Lavado <span className="text-gold-500">*</span>
                 </label>
-                <input
-                  type="date" name="washDate" value={formData.washDate}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={handleChange} onBlur={() => handleBlur('washDate')}
-                  className={`${inputCls('washDate')} text-sm`}
-                  style={{ colorScheme: 'light' }}
+                <DateInput
+                  name="washDate"
+                  value={formData.washDate}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('washDate')}
+                  minDate={new Date()}
+                  className={`${inputCls('washDate')} text-sm pr-10`}
                 />
                 {touched.washDate && errors.washDate && (
                   <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
@@ -749,11 +774,12 @@ function BookingForm() {
                   <Clock className="w-4 h-4 text-gold-500" />
                   Hora Preferida
                 </label>
-                <input
-                  type="time" name="washTime" value={formData.washTime}
+                <TimeInput
+                  name="washTime"
+                  value={formData.washTime}
                   onChange={handleChange}
-                  className={`${inputCls('washTime')} text-sm`}
-                  style={{ colorScheme: 'light' }}
+                  minTime={getMinTime(formData.washDate)}
+                  className={`${inputCls('washTime')} text-sm pr-10`}
                 />
               </motion.div>
             </div>
@@ -770,12 +796,13 @@ function BookingForm() {
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Ingreso <span className="text-gold-500">*</span>
                 </label>
-                <input
-                  type="date" name="parkingEntryDate" value={formData.parkingEntryDate}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={handleChange} onBlur={() => handleBlur('parkingEntryDate')}
-                  className={`${inputCls('parkingEntryDate')} text-sm`}
-                  style={{ colorScheme: 'light' }}
+                <DateInput
+                  name="parkingEntryDate"
+                  value={formData.parkingEntryDate}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('parkingEntryDate')}
+                  minDate={new Date()}
+                  className={`${inputCls('parkingEntryDate')} text-sm pr-10`}
                 />
                 {touched.parkingEntryDate && errors.parkingEntryDate && (
                   <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
@@ -787,11 +814,12 @@ function BookingForm() {
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Ingreso
                   </label>
-                  <input
-                    type="time" name="parkingEntryTime" value={formData.parkingEntryTime}
+                  <TimeInput
+                    name="parkingEntryTime"
+                    value={formData.parkingEntryTime}
                     onChange={handleChange}
-                    className={`${inputCls('parkingEntryTime')} text-sm`}
-                    style={{ colorScheme: 'light' }}
+                    minTime={getMinTime(formData.parkingEntryDate)}
+                    className={`${inputCls('parkingEntryTime')} text-sm pr-10`}
                   />
                 </div>
               </motion.div>
@@ -801,12 +829,13 @@ function BookingForm() {
                   <Calendar className="w-4 h-4 text-gold-500" />
                   Fecha de Salida <span className="text-gold-500">*</span>
                 </label>
-                <input
-                  type="date" name="parkingExitDate" value={formData.parkingExitDate}
-                  min={formData.parkingEntryDate || new Date().toISOString().split('T')[0]}
-                  onChange={handleChange} onBlur={() => handleBlur('parkingExitDate')}
-                  className={`${inputCls('parkingExitDate')} text-sm`}
-                  style={{ colorScheme: 'light' }}
+                <DateInput
+                  name="parkingExitDate"
+                  value={formData.parkingExitDate}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('parkingExitDate')}
+                  minDate={formData.parkingEntryDate ? new Date(formData.parkingEntryDate + 'T00:00:00') : new Date()}
+                  className={`${inputCls('parkingExitDate')} text-sm pr-10`}
                 />
                 {touched.parkingExitDate && errors.parkingExitDate && (
                   <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
@@ -818,11 +847,12 @@ function BookingForm() {
                     <Clock className="w-3.5 h-3.5 text-gold-500/60" />
                     Hora de Salida
                   </label>
-                  <input
-                    type="time" name="parkingExitTime" value={formData.parkingExitTime}
+                  <TimeInput
+                    name="parkingExitTime"
+                    value={formData.parkingExitTime}
                     onChange={handleChange}
-                    className={`${inputCls('parkingExitTime')} text-sm`}
-                    style={{ colorScheme: 'light' }}
+                    minTime={getMinTime(formData.parkingExitDate)}
+                    className={`${inputCls('parkingExitTime')} text-sm pr-10`}
                   />
                 </div>
               </motion.div>

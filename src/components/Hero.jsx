@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Car, User, Phone as PhoneIcon, Mail, AlertCircle, ChevronDown, Droplets, Clock, ParkingCircle, Hash } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { supabase } from '../lib/supabase';
 import { checkRateLimit, recordSubmission } from '../utils/rateLimiter';
 import { validateBookingForm, sanitizeText } from '../utils/validation';
 import { useConfig } from '../context/ConfigContext';
 import { useVehicles } from '../context/VehicleContext';
 import Notification from './Notification';
 import BookingConfirmationModal from './BookingConfirmationModal';
+import DateInput from './DateInput';
+import TimeInput from './TimeInput';
 
 // Imagen hero por defecto (coche en carretera oscura)
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&h=1080&fit=crop&q=80';
@@ -134,23 +136,43 @@ function Hero() {
     else { const e2 = { ...errors }; delete e2[field]; setErrors(e2); }
   };
 
+  const ALLOWED_WASH_TYPES = ['Lavado Interior y Exterior', 'Lavado de Tapiz', 'Lavado de Motor', 'Lavado 360°', 'Lavado Bajada de Faena'];
+
   const validateWashForm = () => {
     const errs = {};
+    const cleanPhone = formData.phone.replace(/[^\d]/g, '');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const washD = formData.washDate ? new Date(formData.washDate + 'T00:00:00') : null;
     if (!formData.name.trim() || formData.name.trim().split(/\s+/).length < 2) errs.name = 'Ingresa tu nombre completo';
+    if (formData.name.trim().length > 100) errs.name = 'Nombre demasiado largo';
     if (!formData.phone.trim()) errs.phone = 'El teléfono es requerido';
+    else if (cleanPhone.length < 8 || cleanPhone.length > 12) errs.phone = 'Número de teléfono inválido';
     if (!formData.washDate) errs.washDate = 'La fecha es requerida';
+    else if (washD < today) errs.washDate = 'La fecha no puede ser en el pasado';
     if (!formData.washType) errs.washType = 'Selecciona un tipo de lavado';
+    else if (!ALLOWED_WASH_TYPES.includes(formData.washType)) errs.washType = 'Tipo de lavado no válido';
     if (!formData.vehicleDescription.trim()) errs.vehicleDescription = 'Describe tu vehículo';
+    else if (formData.vehicleDescription.trim().length > 200) errs.vehicleDescription = 'Descripción demasiado larga';
     return { isValid: Object.keys(errs).length === 0, errors: errs };
   };
 
   const validateParkingForm = () => {
     const errs = {};
+    const cleanPhone = formData.phone.replace(/[^\d]/g, '');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const entryD = formData.parkingEntryDate ? new Date(formData.parkingEntryDate + 'T00:00:00') : null;
+    const exitD = formData.parkingExitDate ? new Date(formData.parkingExitDate + 'T00:00:00') : null;
     if (!formData.name.trim() || formData.name.trim().split(/\s+/).length < 2) errs.name = 'Ingresa tu nombre completo';
+    if (formData.name.trim().length > 100) errs.name = 'Nombre demasiado largo';
     if (!formData.phone.trim()) errs.phone = 'El teléfono es requerido';
+    else if (cleanPhone.length < 8 || cleanPhone.length > 12) errs.phone = 'Número de teléfono inválido';
     if (!formData.parkingEntryDate) errs.parkingEntryDate = 'La fecha de ingreso es requerida';
+    else if (entryD < today) errs.parkingEntryDate = 'La fecha de ingreso no puede ser en el pasado';
     if (!formData.parkingExitDate) errs.parkingExitDate = 'La fecha de salida es requerida';
+    else if (entryD && exitD && exitD < entryD) errs.parkingExitDate = 'La salida debe ser posterior al ingreso';
     if (!formData.parkingVehicle.trim()) errs.parkingVehicle = 'Describe tu vehículo';
+    else if (formData.parkingVehicle.trim().length > 200) errs.parkingVehicle = 'Descripción demasiado larga';
+    if (formData.parkingPlate && !/^[A-Z0-9]{2,7}$/.test(formData.parkingPlate)) errs.parkingPlate = 'Patente inválida';
     return { isValid: Object.keys(errs).length === 0, errors: errs };
   };
 
@@ -172,24 +194,18 @@ function Hero() {
       }
       setIsSubmitting(true);
       try {
-        await emailjs.send(
-          import.meta.env.VITE_EMAILJS_SERVICE_ID,
-          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-          {
-            from_name: sanitizeText(formData.name),
-            from_email: sanitizeText(formData.email),
-            phone: sanitizeText(formData.phone),
-            service_type: 'Estacionamiento',
-            wash_date: formData.parkingEntryDate,
-            wash_time: formData.parkingEntryTime,
-            wash_type: `Salida: ${formData.parkingExitDate} ${formData.parkingExitTime} (${formatParkingDuration(parkingHours)})`,
-            vehicle_description: `${sanitizeText(formData.parkingVehicle)}${formData.parkingPlate ? ` — Patente: ${sanitizeText(formData.parkingPlate)}` : ''}`,
-            message: sanitizeText(formData.message),
-            pickup_location: '', pickup_date: '', return_date: '', car_type: '',
-            rental_days: '', daily_price: '', subtotal: '', iva: '', total: ''
-          },
-          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-        );
+        const { error } = await supabase.functions.invoke('send-email', { body: {
+          from_name: sanitizeText(formData.name),
+          from_email: sanitizeText(formData.email),
+          phone: sanitizeText(formData.phone),
+          service_type: 'Estacionamiento',
+          wash_date: formData.parkingEntryDate,
+          wash_time: formData.parkingEntryTime,
+          wash_type: `Salida: ${formData.parkingExitDate} ${formData.parkingExitTime} (${formatParkingDuration(parkingHours)})`,
+          vehicle_description: `${sanitizeText(formData.parkingVehicle)}${formData.parkingPlate ? ` — Patente: ${sanitizeText(formData.parkingPlate)}` : ''}`,
+          message: sanitizeText(formData.message),
+        }});
+        if (error) throw error;
         recordSubmission();
         setNotification({ show: true, type: 'success', title: '¡Reserva de Estacionamiento Enviada!', message: 'Tu solicitud fue enviada. Te contactaremos para confirmar.' });
         setFormData(p => ({ ...p, name: '', email: '', phone: '', parkingEntryDate: '', parkingEntryTime: '09:00', parkingExitDate: '', parkingExitTime: '09:00', parkingVehicle: '', parkingPlate: '', message: '' }));
@@ -215,24 +231,18 @@ function Hero() {
       }
       setIsSubmitting(true);
       try {
-        await emailjs.send(
-          import.meta.env.VITE_EMAILJS_SERVICE_ID,
-          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-          {
-            from_name: sanitizeText(formData.name),
-            from_email: sanitizeText(formData.email),
-            phone: sanitizeText(formData.phone),
-            service_type: 'Lavado',
-            wash_date: formData.washDate,
-            wash_time: formData.washTime,
-            wash_type: sanitizeText(formData.washType),
-            vehicle_description: sanitizeText(formData.vehicleDescription),
-            message: sanitizeText(formData.message),
-            pickup_location: '', pickup_date: '', return_date: '', car_type: '',
-            rental_days: '', daily_price: '', subtotal: '', iva: '', total: ''
-          },
-          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-        );
+        const { error } = await supabase.functions.invoke('send-email', { body: {
+          from_name: sanitizeText(formData.name),
+          from_email: sanitizeText(formData.email),
+          phone: sanitizeText(formData.phone),
+          service_type: 'Lavado',
+          wash_date: formData.washDate,
+          wash_time: formData.washTime,
+          wash_type: sanitizeText(formData.washType),
+          vehicle_description: sanitizeText(formData.vehicleDescription),
+          message: sanitizeText(formData.message),
+        }});
+        if (error) throw error;
         recordSubmission();
         setNotification({ show: true, type: 'success', title: '¡Lavado Agendado!', message: 'Tu solicitud fue enviada. Te contactaremos para confirmar.' });
         setFormData(p => ({ ...p, name: '', email: '', phone: '', washDate: '', washTime: '09:00', washType: '', vehicleDescription: '', message: '' }));
@@ -256,31 +266,24 @@ function Hero() {
       return;
     }
     setIsSubmitting(true);
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const CLIENT_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_CLIENT_TEMPLATE_ID;
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    const templateParams = {
-      from_name: sanitizeText(formData.name),
-      from_email: sanitizeText(formData.email),
-      phone: sanitizeText(formData.phone),
-      pickup_location: sanitizeText(formData.pickupLocation),
-      pickup_date: formData.pickupDate, pickup_time: formData.pickupTime,
-      return_date: formData.returnDate, return_time: formData.returnTime,
-      car_type: sanitizeText(formData.carType),
-      message: sanitizeText(formData.message),
-      rental_days: rentalDays,
-      daily_price: priceData?.dailyPrice ?? 'N/A',
-      subtotal: priceData?.subtotal ?? 'N/A',
-      iva: priceData?.iva ?? 'N/A',
-      total: priceData?.total ?? 'N/A'
-    };
     try {
-      await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
-      if (CLIENT_TEMPLATE_ID) {
-        try { await emailjs.send(SERVICE_ID, CLIENT_TEMPLATE_ID, templateParams, PUBLIC_KEY); }
-        catch (err) { console.error('Error correo cliente:', err); }
-      }
+      const { error } = await supabase.functions.invoke('send-email', { body: {
+        from_name: sanitizeText(formData.name),
+        from_email: sanitizeText(formData.email),
+        phone: sanitizeText(formData.phone),
+        service_type: 'Arriendo',
+        pickup_location: sanitizeText(formData.pickupLocation),
+        pickup_date: formData.pickupDate,
+        pickup_time: formData.pickupTime,
+        return_date: formData.returnDate,
+        return_time: formData.returnTime,
+        car_type: sanitizeText(formData.carType),
+        message: sanitizeText(formData.message),
+        rental_days: rentalDays,
+        daily_price: priceData?.dailyPrice ?? 'N/A',
+        total: priceData?.total ?? 'N/A'
+      }});
+      if (error) throw error;
       recordSubmission();
       setConfirmationData({ ...formData });
       setShowConfirmationModal(true);
@@ -359,6 +362,15 @@ function Hero() {
     `w-full bg-transparent border-b pb-3 pt-2 text-white placeholder-stone-500 focus:outline-none transition-colors duration-300 ${
       touched[field] && errors[field] ? 'border-red-500 focus:border-red-400' : 'border-stone-700 focus:border-gold-500'
     }`;
+
+  const getMinTime = (dateStr) => {
+    const today = new Date().toISOString().split('T')[0];
+    if (dateStr === today) {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+    return '';
+  };
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -616,19 +628,22 @@ function Hero() {
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Vehículo *
                     </label>
-                    <select
-                      name="carType" value={formData.carType}
-                      onChange={handleChange} onBlur={() => handleBlur('carType')}
-                      className={`${inputBase('carType')} bg-transparent`}
-                      style={{ colorScheme: 'dark' }}
-                    >
-                      <option value="" className="bg-stone-900">Seleccionar vehículo</option>
-                      {vehicles.filter(v => v.available).map((v, i) => (
-                        <option key={i} value={v.name} className="bg-stone-900">
-                          {v.name} — {v.price}/día
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        name="carType" value={formData.carType}
+                        onChange={handleChange} onBlur={() => handleBlur('carType')}
+                        className={`${inputBase('carType')} bg-transparent appearance-none pr-8 cursor-pointer`}
+                        style={{ colorScheme: 'dark' }}
+                      >
+                        <option value="" className="bg-stone-900">Seleccionar vehículo</option>
+                        {vehicles.filter(v => v.available).map((v, i) => (
+                          <option key={i} value={v.name} className="bg-stone-900">
+                            {v.name} — {v.price}/día
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+                    </div>
                     {touched.carType && errors.carType && (
                       <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" /> {errors.carType}
@@ -642,19 +657,8 @@ function Hero() {
                       Fecha de Recogida *
                     </label>
                     <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="date" name="pickupDate" value={formData.pickupDate}
-                        min={today} onChange={handleChange}
-                        onBlur={() => handleBlur('dates')}
-                        className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'light' }}
-                      />
-                      <input
-                        type="time" name="pickupTime" value={formData.pickupTime}
-                        onChange={handleChange}
-                        className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'light' }}
-                      />
+                      <DateInput name="pickupDate" value={formData.pickupDate} onChange={handleChange} onBlur={() => handleBlur('dates')} minDate={new Date()} className={`${inputBase('dates')} text-sm pr-8`} />
+                      <TimeInput name="pickupTime" value={formData.pickupTime} onChange={handleChange} minTime={getMinTime(formData.pickupDate)} className={`${inputBase('dates')} text-sm pr-8`} />
                     </div>
                   </div>
 
@@ -664,19 +668,8 @@ function Hero() {
                       Fecha de Devolución *
                     </label>
                     <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="date" name="returnDate" value={formData.returnDate}
-                        min={formData.pickupDate || today} onChange={handleChange}
-                        onBlur={() => handleBlur('dates')}
-                        className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'light' }}
-                      />
-                      <input
-                        type="time" name="returnTime" value={formData.returnTime}
-                        onChange={handleChange}
-                        className={`${inputBase('dates')} text-sm`}
-                        style={{ colorScheme: 'light' }}
-                      />
+                      <DateInput name="returnDate" value={formData.returnDate} onChange={handleChange} onBlur={() => handleBlur('dates')} minDate={formData.pickupDate ? new Date(formData.pickupDate + 'T00:00:00') : new Date()} className={`${inputBase('dates')} text-sm pr-8`} />
+                      <TimeInput name="returnTime" value={formData.returnTime} onChange={handleChange} minTime={getMinTime(formData.returnDate)} className={`${inputBase('dates')} text-sm pr-8`} />
                     </div>
                     {touched.dates && errors.dates && (
                       <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
@@ -764,14 +757,18 @@ function Hero() {
                   {/* Tipo de lavado */}
                   <div>
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Tipo de Lavado *</label>
-                    <select name="washType" value={formData.washType} onChange={handleChange} onBlur={() => handleBlur('washType')}
-                      className={`${inputBase('washType')} bg-transparent`} style={{ colorScheme: 'dark' }}>
-                      <option value="" className="bg-stone-900">Seleccionar tipo</option>
-                      <option value="Lavado Básico" className="bg-stone-900">Lavado Básico — Exterior</option>
-                      <option value="Lavado Completo" className="bg-stone-900">Lavado Completo — Ext + Int</option>
-                      <option value="Lavado Premium" className="bg-stone-900">Lavado Premium — + Encerado</option>
-                      <option value="Detailing" className="bg-stone-900">Detailing — Profesional completo</option>
-                    </select>
+                    <div className="relative">
+                      <select name="washType" value={formData.washType} onChange={handleChange} onBlur={() => handleBlur('washType')}
+                        className={`${inputBase('washType')} bg-transparent appearance-none pr-8 cursor-pointer`} style={{ colorScheme: 'dark' }}>
+                        <option value="" className="bg-stone-900">Seleccionar tipo</option>
+                        <option value="Lavado Interior y Exterior" className="bg-stone-900">Lavado Interior y Exterior</option>
+                        <option value="Lavado de Tapiz" className="bg-stone-900">Lavado de Tapiz</option>
+                        <option value="Lavado de Motor" className="bg-stone-900">Lavado de Motor</option>
+                        <option value="Lavado 360°" className="bg-stone-900">Lavado 360°</option>
+                        <option value="Lavado Bajada de Faena" className="bg-stone-900">Lavado Bajada de Faena</option>
+                      </select>
+                      <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+                    </div>
                     {touched.washType && errors.washType && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.washType}</p>}
                   </div>
                   {/* Vehículo */}
@@ -784,15 +781,13 @@ function Hero() {
                   {/* Fecha */}
                   <div>
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Fecha *</label>
-                    <input type="date" name="washDate" value={formData.washDate} min={today} onChange={handleChange} onBlur={() => handleBlur('washDate')}
-                      className={`${inputBase('washDate')} text-sm`} style={{ colorScheme: 'light' }} />
+                    <DateInput name="washDate" value={formData.washDate} onChange={handleChange} onBlur={() => handleBlur('washDate')} minDate={new Date()} className={`${inputBase('washDate')} text-sm pr-8`} />
                     {touched.washDate && errors.washDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.washDate}</p>}
                   </div>
                   {/* Hora */}
                   <div>
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Hora Preferida</label>
-                    <input type="time" name="washTime" value={formData.washTime} onChange={handleChange}
-                      className={`${inputBase('washTime')} text-sm`} style={{ colorScheme: 'light' }} />
+                      <TimeInput name="washTime" value={formData.washTime} onChange={handleChange} minTime={getMinTime(formData.washDate)} className={`${inputBase('washTime')} text-sm pr-8`} />
                   </div>
                 </div>
               </div>
@@ -846,12 +841,8 @@ function Hero() {
                   <div>
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Ingreso *</label>
                     <div className="grid grid-cols-2 gap-2">
-                      <input type="date" name="parkingEntryDate" value={formData.parkingEntryDate}
-                        min={today} onChange={handleChange} onBlur={() => handleBlur('parkingEntryDate')}
-                        className={`${inputBase('parkingEntryDate')} text-sm`} style={{ colorScheme: 'light' }} />
-                      <input type="time" name="parkingEntryTime" value={formData.parkingEntryTime}
-                        onChange={handleChange}
-                        className={`${inputBase('parkingEntryTime')} text-sm`} style={{ colorScheme: 'light' }} />
+                      <DateInput name="parkingEntryDate" value={formData.parkingEntryDate} onChange={handleChange} onBlur={() => handleBlur('parkingEntryDate')} minDate={new Date()} className={`${inputBase('parkingEntryDate')} text-sm pr-8`} />
+                      <TimeInput name="parkingEntryTime" value={formData.parkingEntryTime} onChange={handleChange} minTime={getMinTime(formData.parkingEntryDate)} className={`${inputBase('parkingEntryTime')} text-sm pr-8`} />
                     </div>
                     {touched.parkingEntryDate && errors.parkingEntryDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingEntryDate}</p>}
                   </div>
@@ -859,12 +850,8 @@ function Hero() {
                   <div>
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">Fecha de Salida *</label>
                     <div className="grid grid-cols-2 gap-2">
-                      <input type="date" name="parkingExitDate" value={formData.parkingExitDate}
-                        min={formData.parkingEntryDate || today} onChange={handleChange} onBlur={() => handleBlur('parkingExitDate')}
-                        className={`${inputBase('parkingExitDate')} text-sm`} style={{ colorScheme: 'light' }} />
-                      <input type="time" name="parkingExitTime" value={formData.parkingExitTime}
-                        onChange={handleChange}
-                        className={`${inputBase('parkingExitTime')} text-sm`} style={{ colorScheme: 'light' }} />
+                      <DateInput name="parkingExitDate" value={formData.parkingExitDate} onChange={handleChange} onBlur={() => handleBlur('parkingExitDate')} minDate={formData.parkingEntryDate ? new Date(formData.parkingEntryDate + 'T00:00:00') : new Date()} className={`${inputBase('parkingExitDate')} text-sm pr-8`} />
+                      <TimeInput name="parkingExitTime" value={formData.parkingExitTime} onChange={handleChange} minTime={getMinTime(formData.parkingExitDate)} className={`${inputBase('parkingExitTime')} text-sm pr-8`} />
                     </div>
                     {touched.parkingExitDate && errors.parkingExitDate && <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.parkingExitDate}</p>}
                   </div>
