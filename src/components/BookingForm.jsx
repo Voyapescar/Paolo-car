@@ -10,6 +10,7 @@ import Notification from './Notification';
 import BookingConfirmationModal from './BookingConfirmationModal';
 import DateInput from './DateInput';
 import TimeInput from './TimeInput';
+import VehicleSelect from './VehicleSelect';
 
 function BookingForm() {
   const { config } = useConfig();
@@ -670,23 +671,16 @@ function BookingForm() {
                 <Car className="w-4 h-4 text-gold-500" />
                 Tipo de Vehículo <span className="text-gold-500">*</span>
               </label>
-              <div className="relative">
-                <select
-                  name="carType" value={formData.carType}
-                  onChange={handleChange} onBlur={() => handleBlur('carType')}
-                  disabled={vehiclesLoading}
-                  className={`${inputCls('carType')} bg-white appearance-none pr-10 cursor-pointer ${vehiclesLoading ? 'cursor-wait opacity-60' : ''}`}
-                  style={{ colorScheme: 'light' }}
-                >
-                  <option value="">{vehiclesLoading ? 'Cargando vehículos...' : 'Selecciona un vehículo'}</option>
-                  {!vehiclesLoading && vehicles.filter(v => v.available !== false).map((v) => (
-                    <option key={v.id} value={v.name}>
-                      {v.name} — {v.model} ({v.price}/día)
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
-              </div>
+              <VehicleSelect
+                name="carType"
+                value={formData.carType}
+                vehicles={vehicles}
+                loading={vehiclesLoading}
+                onChange={handleChange}
+                onBlur={() => handleBlur('carType')}
+                hasError={!!(touched.carType && errors.carType)}
+                variant="light"
+              />
               {touched.carType && errors.carType && (
                 <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" /> {errors.carType}

@@ -10,6 +10,7 @@ import Notification from './Notification';
 import BookingConfirmationModal from './BookingConfirmationModal';
 import DateInput from './DateInput';
 import TimeInput from './TimeInput';
+import VehicleSelect from './VehicleSelect';
 
 // Imagen hero por defecto (coche en carretera oscura)
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&h=1080&fit=crop&q=80';
@@ -628,22 +629,16 @@ function Hero() {
                     <label className="block text-stone-400 text-xs tracking-[0.15em] uppercase mb-3">
                       Vehículo *
                     </label>
-                    <div className="relative">
-                      <select
-                        name="carType" value={formData.carType}
-                        onChange={handleChange} onBlur={() => handleBlur('carType')}
-                        className={`${inputBase('carType')} bg-transparent appearance-none pr-8 cursor-pointer`}
-                        style={{ colorScheme: 'dark' }}
-                      >
-                        <option value="" className="bg-stone-900">Seleccionar vehículo</option>
-                        {vehicles.filter(v => v.available).map((v, i) => (
-                          <option key={i} value={v.name} className="bg-stone-900">
-                            {v.name} — {v.price}/día
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
-                    </div>
+                    <VehicleSelect
+                      name="carType"
+                      value={formData.carType}
+                      vehicles={vehicles}
+                      loading={false}
+                      onChange={handleChange}
+                      onBlur={() => handleBlur('carType')}
+                      hasError={!!(touched.carType && errors.carType)}
+                      variant="dark"
+                    />
                     {touched.carType && errors.carType && (
                       <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" /> {errors.carType}
